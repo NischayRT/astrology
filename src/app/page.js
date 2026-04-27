@@ -196,11 +196,23 @@ function Navbar() {
 }
 
 function HeroSection() {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Moon drifts DOWN slowly, Sun drifts UP on scroll
+  const moonParallax = scrollY * 0.18;   // positive = moves down
+  const sunParallax  = scrollY * -0.14;  // negative = moves up
+
   return (
     <section style={{
       position: "relative", minHeight: "100vh", display: "flex", alignItems: "center",
       background: "linear-gradient(160deg, #FDF6EC 0%, #F5E8D2 40%, #EDD9B8 100%)",
-      overflow: "hidden", // Crucial: prevents horizontal scroll from the right image
+      overflow: "hidden",
     }}>
       <CelestialBackground />
 
@@ -209,49 +221,51 @@ function HeroSection() {
       <div style={{ position: "absolute", bottom: "20%", left: "5%", width: 120, height: 120, borderRadius: "50%", background: "rgba(139,111,168,0.1)", filter: "blur(2px)" }} />
       <div style={{ position: "absolute", top: "55%", right: "20%", width: 80, height: 80, borderRadius: "50%", background: "rgba(196,90,122,0.1)" }} />
 
-      {/* Left Corner: Moon (Shifted left by 40%, so right 60% is visible) */}
-      <div style={{ 
-        position: "absolute", left: 0, top: "50%", 
-        transform: "translate(-40%, -50%)", 
-        zIndex: 1, width: "100%", maxWidth: 600 
+      {/* Left: Moon — drifts DOWN on scroll */}
+      <div style={{
+        position: "absolute", left: 0, top: "50%",
+        transform: `translate(-40%, calc(-50% + ${moonParallax}px))`,
+        zIndex: 1, width: "100%", maxWidth: 600,
+        willChange: "transform",
       }}>
-        <Image 
-          src="/hero-moon.png" 
-          alt="Moon Illustration" 
+        <Image
+          src="/hero-moon.png"
+          alt="Moon Illustration"
           width={600}
           height={600}
-          style={{ 
-            width: "100%", height: "auto", 
-            filter: "drop-shadow(0 0 20px rgba(139, 111, 168, 0.2))" 
-          }} 
+          style={{
+            width: "100%", height: "auto",
+            filter: "drop-shadow(0 0 20px rgba(139, 111, 168, 0.2))",
+          }}
         />
       </div>
 
-      {/* Right Corner: Sun (Shifted right by 40%, so left 60% is visible) */}
-      <div style={{ 
-        position: "absolute", right: 0, top: "50%", 
-        transform: "translate(30%, -50%)", 
-        zIndex: 1, width: "100%", maxWidth: 600 
+      {/* Right: Sun — drifts UP on scroll */}
+      <div style={{
+        position: "absolute", right: 0, top: "50%",
+        transform: `translate(30%, calc(-50% + ${sunParallax}px))`,
+        zIndex: 1, width: "100%", maxWidth: 600,
+        willChange: "transform",
       }}>
-        <Image 
-          src="/hero-sun.png" 
-          alt="Sun Illustration" 
+        <Image
+          src="/hero-sun.png"
+          alt="Sun Illustration"
           width={600}
           height={600}
-          style={{ 
-            width: "100%", height: "auto", 
-            filter: "drop-shadow(0 0 20px rgba(196, 132, 90, 0.2))" 
-          }} 
+          style={{
+            width: "100%", height: "auto",
+            filter: "drop-shadow(0 0 20px rgba(196, 132, 90, 0.2))",
+          }}
         />
       </div>
 
-      {/* Centered Main Content */}
-      <div style={{ 
-        maxWidth: 800, margin: "0 auto", padding: "0 3rem", width: "100%", 
-        zIndex: 2, paddingTop: 80, display: "flex", flexDirection: "column", 
-        alignItems: "center", textAlign: "center" 
+      {/* Centered Main Content — fades in on load */}
+      <div style={{
+        maxWidth: 800, margin: "0 auto", padding: "0 3rem", width: "100%",
+        zIndex: 2, paddingTop: 80, display: "flex", flexDirection: "column",
+        alignItems: "center", textAlign: "center",
+        animation: "heroFadeUp 1s cubic-bezier(0.22,1,0.36,1) both",
       }}>
-        
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
           <div style={{ width: 28, height: 1, background: "#C4845A" }} />
           <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#C4845A", letterSpacing: 3, textTransform: "uppercase" }}>Vedic Jyotish Shastra</span>
@@ -276,13 +290,21 @@ function HeroSection() {
             fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 16, fontWeight: 600,
             background: "#C4845A", color: "#FDF6EC", border: "none",
             padding: "14px 32px", borderRadius: 2, cursor: "pointer", letterSpacing: 1,
-          }}>Get Prediction</button>
+            transition: "background 0.25s ease, transform 0.2s ease",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.background = "#A8673D"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "#C4845A"; e.currentTarget.style.transform = "none"; }}
+          >Get Prediction</button>
           <button style={{
             fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 16,
             background: "transparent", color: "#C4845A",
             border: "1.5px solid rgba(196,132,90,0.5)",
             padding: "13px 28px", borderRadius: 2, cursor: "pointer", letterSpacing: 1,
-          }}>View Kundali</button>
+            transition: "border-color 0.25s ease, color 0.25s ease, transform 0.2s ease",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = "#C4845A"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(196,132,90,0.5)"; e.currentTarget.style.transform = "none"; }}
+          >View Kundali</button>
         </div>
 
         <div style={{ display: "flex", gap: "3.5rem", marginTop: "3.5rem", justifyContent: "center" }}>
@@ -301,16 +323,16 @@ const SERVICES_WITH_IMG = [
   {
     title: "Palm Reading",
     subtitle: "Haath Rekha Vigyan",
-    desc: "Discover the secrets written in the lines of your palm. Our ancient Vedic palmists decode your fate, health, and karmic path.",
-    cta: "Read My Palm",
+    desc: "Simply put, palmistry is the art of analyzing the physical features of the hands to interpret personality characteristics and predict future happenings.",
+    cta: "Find out the fate",
     accent: "#C4845A",
     img: "/palm.png",
   },
   {
     title: "Horoscope",
     subtitle: "Janam Kundali",
-    desc: "Your birth chart is a cosmic blueprint. Understand planetary positions and their influence on your life, relationships, and destiny.",
-    cta: "View My Kundali",
+    desc: "Plan your day accordingly stars. Understand planetary positions and their influence on your life, relationships, and destiny.",
+    cta: "Read Daily Prediction",
     accent: "#8B6FA8",
     img: "/astro.png",
   },
@@ -335,72 +357,80 @@ function ServicesSection() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // On desktop: hover controls active; on mobile/tablet: click controls
   const handleEnter = (i) => { if (!isMobile) setActive(i); };
   const handleLeave = ()  => { if (!isMobile) setActive(null); };
   const handleClick = (i) => { if (isMobile) setActive(prev => prev === i ? null : i); };
 
-  // Panel height logic
-  // Container fixed height: 560px on desktop, auto-stacked on mobile
-  const PANEL_H = 560; // px, desktop container height
+  const PANEL_H = 560;
 
   return (
     <section style={{ background: "#FDF6EC", padding: "6rem 0" }}>
-      {/* Inject transition styles via a style tag */}
       <style>{`
         .svc-panel {
           position: relative;
           overflow: hidden;
           cursor: pointer;
-          transition: flex 0.65s cubic-bezier(0.77,0,0.18,1), height 0.65s cubic-bezier(0.77,0,0.18,1);
+          background-color: #F5E8D2; /* Default background color matching the image */
+          transition: flex 0.65s cubic-bezier(0.77,0,0.18,1), height 0.65s cubic-bezier(0.77,0,0.18,1), background-color 0.65s ease;
         }
+        
+        /* Change background color on hover */
+        .svc-panel.active {
+          background-color: #EDD9B8; 
+        }
+
         .svc-img {
           position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          object-position: center top;
-          opacity: 0.35;
-          transition: opacity 0.65s ease, transform 0.65s ease;
+          left: 50%;
+          top: 0;
+          width: 320px; /* Adjust this based on your actual png dimensions */
+          height: auto;
+          /* Shifts the image up so only the bottom 50% is visible */
+          transform: translate(-50%, -45%);
+          opacity: 0.8;
+          mix-blend-mode: multiply; /* Helps line-art blend into the background */
+          transition: top 0.65s cubic-bezier(0.77,0,0.18,1), transform 0.65s cubic-bezier(0.77,0,0.18,1), opacity 0.65s ease;
+          pointer-events: none;
         }
+
+        /* Hover State: Image slides down to center and fades to a watermark */
         .svc-panel.active .svc-img {
-          opacity: 0.55;
-          transform: scale(1.03);
+          top: 50%;
+          transform: translate(-50%, -50%) scale(1.1);
+          opacity: 0.12; /* Drops opacity so the dark text remains readable over it */
         }
-        .svc-overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(to top, rgba(30,8,2,0.82) 0%, rgba(30,8,2,0.3) 55%, transparent 100%);
-          transition: background 0.65s ease;
-        }
-        .svc-panel.active .svc-overlay {
-          background: linear-gradient(to top, rgba(30,8,2,0.88) 0%, rgba(30,8,2,0.4) 50%, rgba(30,8,2,0.1) 100%);
-        }
+
         .svc-content {
           position: absolute;
           bottom: 0; left: 0; right: 0;
-          padding: 2rem 2rem 2.2rem;
+          padding: 2.5rem 2rem;
           z-index: 2;
-          transition: padding 0.65s ease;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
         }
+
         .svc-desc {
           max-height: 0;
           overflow: hidden;
           opacity: 0;
           transition: max-height 0.65s cubic-bezier(0.77,0,0.18,1), opacity 0.45s ease;
         }
+
         .svc-panel.active .svc-desc {
           max-height: 200px;
           opacity: 1;
         }
+
         .svc-cta {
           opacity: 0;
           transform: translateY(8px);
           transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s;
           display: inline-block;
-          margin-top: 1.2rem;
+          margin-top: 1.5rem;
         }
+
         .svc-panel.active .svc-cta {
           opacity: 1;
           transform: translateY(0);
@@ -408,7 +438,6 @@ function ServicesSection() {
       `}</style>
 
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 3rem" }}>
-        {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "4rem" }}>
           <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#C4845A", letterSpacing: 4, textTransform: "uppercase", marginBottom: 12 }}>
             Shastra Se Seva
@@ -421,9 +450,7 @@ function ServicesSection() {
           </p>
         </div>
 
-        {/* Panels */}
         {isMobile ? (
-          // Mobile: vertical stacked accordion
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {SERVICES_WITH_IMG.map((svc, i) => {
               const isActive = active === i;
@@ -435,15 +462,14 @@ function ServicesSection() {
                   style={{ height: isActive ? 420 : 200, borderRadius: 4 }}
                 >
                   <img src={svc.img} alt={svc.title} className="svc-img" />
-                  <div className="svc-overlay" />
                   <div className="svc-content">
-                    <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 11, color: svc.accent, letterSpacing: 3, textTransform: "uppercase", marginBottom: 4 }}>{svc.subtitle}</div>
-                    <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 22, fontWeight: 600, color: "#EDD9B8", margin: 0 }}>{svc.title}</h3>
+                    {/* Subtitle removed to better match the minimalist image reference */}
+                    <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 28, fontWeight: 400, color: "#2C1205", margin: 0 }}>{svc.title}</h3>
                     <div className="svc-desc">
-                      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 15, color: "rgba(237,217,184,0.85)", lineHeight: 1.7, margin: "0.8rem 0 0" }}>{svc.desc}</p>
+                      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 16, color: "#6B4423", lineHeight: 1.6, margin: "1rem 0 0" }}>{svc.desc}</p>
                     </div>
-                    <a href="#" className="svc-cta" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 14, fontWeight: 600, color: svc.accent, textDecoration: "none", letterSpacing: 1, borderBottom: `1px solid ${svc.accent}`, paddingBottom: 2 }}>
-                      {svc.cta} →
+                    <a href="#" className="svc-cta" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 15, fontWeight: 600, color: "#2C1205", textDecoration: "none", borderBottom: `1px solid rgba(44,18,5,0.3)`, paddingBottom: 4 }}>
+                      {svc.cta}
                     </a>
                   </div>
                 </div>
@@ -451,11 +477,9 @@ function ServicesSection() {
             })}
           </div>
         ) : (
-          // Desktop: horizontal panels with flex
           <div style={{ display: "flex", height: PANEL_H, gap: 12, borderRadius: 4, overflow: "hidden" }}>
             {SERVICES_WITH_IMG.map((svc, i) => {
               const isActive = active === i;
-              // Active panel gets 50% flex-grow, others split the remaining 50%
               const flexValue = active === null ? 1 : isActive ? 2 : 0.5;
               return (
                 <div
@@ -466,15 +490,13 @@ function ServicesSection() {
                   style={{ flex: flexValue, borderRadius: 4, minWidth: 0 }}
                 >
                   <img src={svc.img} alt={svc.title} className="svc-img" />
-                  <div className="svc-overlay" />
                   <div className="svc-content">
-                    <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 11, color: svc.accent, letterSpacing: 3, textTransform: "uppercase", marginBottom: 4 }}>{svc.subtitle}</div>
-                    <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: isActive ? 26 : 20, fontWeight: 600, color: "#EDD9B8", margin: 0, transition: "font-size 0.4s ease" }}>{svc.title}</h3>
+                    <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: isActive ? 34 : 26, fontWeight: 400, color: "#2C1205", margin: 0, transition: "font-size 0.4s ease" }}>{svc.title}</h3>
                     <div className="svc-desc">
-                      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 16, color: "rgba(237,217,184,0.85)", lineHeight: 1.7, margin: "0.8rem 0 0" }}>{svc.desc}</p>
+                      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 17, color: "#6B4423", lineHeight: 1.6, margin: "1rem 0 0" }}>{svc.desc}</p>
                     </div>
-                    <a href="#" className="svc-cta" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 14, fontWeight: 600, color: svc.accent, textDecoration: "none", letterSpacing: 1, borderBottom: `1px solid ${svc.accent}`, paddingBottom: 2 }}>
-                      {svc.cta} →
+                    <a href="#" className="svc-cta" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 15, fontWeight: 600, color: "#2C1205", textDecoration: "none", borderBottom: `1px solid rgba(44,18,5,0.3)`, paddingBottom: 4 }}>
+                      {svc.cta}
                     </a>
                   </div>
                 </div>
@@ -486,7 +508,6 @@ function ServicesSection() {
     </section>
   );
 }
-
 function ZodiacSection() {
   const [hovered, setHovered] = useState(null);
   return (
