@@ -30,20 +30,6 @@ const SERVICES = [
   },
 ];
 
-const ZODIAC_SIGNS = [
-  { name: "Mesh", en: "Aries", symbol: "♈" },
-  { name: "Vrishabha", en: "Taurus", symbol: "♉" },
-  { name: "Mithuna", en: "Gemini", symbol: "♊" },
-  { name: "Karka", en: "Cancer", symbol: "♋" },
-  { name: "Simha", en: "Leo", symbol: "♌" },
-  { name: "Kanya", en: "Virgo", symbol: "♍" },
-  { name: "Tula", en: "Libra", symbol: "♎" },
-  { name: "Vrishchika", en: "Scorpio", symbol: "♏" },
-  { name: "Dhanu", en: "Sagittarius", symbol: "♐" },
-  { name: "Makara", en: "Capricorn", symbol: "♑" },
-  { name: "Kumbha", en: "Aquarius", symbol: "♒" },
-  { name: "Meena", en: "Pisces", symbol: "♓" },
-];
 
 function PalmIcon() {
   return (
@@ -211,7 +197,7 @@ function HeroSection() {
 
   // --- DESKTOP CALCULATIONS ---
   const moonParallaxY = scrollY * 0.35;   
-  const sunParallaxY  = scrollY * -0.35;  
+  const sunParallaxY  = scrollY * -0.65;  
   
   // --- MOBILE CALCULATIONS ---
   const moonParallaxX = scrollY * 0.25;   
@@ -364,7 +350,7 @@ function ServicesSection() {
   const handleLeave = ()  => { if (!isMobile) setActive(null); };
   const handleClick = (i) => { if (isMobile) setActive(prev => prev === i ? null : i); };
 
-  const PANEL_H = 560;
+  const PANEL_H = 400;
 
   return (
     <section style={{ background: "#FDF6EC", padding: "6rem 0" }}>
@@ -512,8 +498,34 @@ function ServicesSection() {
   );
 }
 
+const ZODIAC_SIGNS = [
+  { name: "Mesh", en: "Aries", symbol: "♈", img: "/rashi/aries.webp" },
+  { name: "Vrishabha", en: "Taurus", symbol: "♉", img: "/rashi/taurus.webp" },
+  { name: "Mithuna", en: "Gemini", symbol: "♊", img: "/rashi/gemini.webp" },
+  { name: "Karka", en: "Cancer", symbol: "♋", img: "/rashi/cancer.webp" },
+  { name: "Simha", en: "Leo", symbol: "♌", img: "/rashi/leo.webp" },
+  { name: "Kanya", en: "Virgo", symbol: "♍", img: "/rashi/virgo.webp" },
+  { name: "Tula", en: "Libra", symbol: "♎", img: "/rashi/libra.webp" },
+  { name: "Vrishchika", en: "Scorpio", symbol: "♏", img: "/rashi/scorpio.webp" },
+  { name: "Dhanu", en: "Sagittarius", symbol: "♐", img: "/rashi/saggitarius.webp" },
+  { name: "Makara", en: "Capricorn", symbol: "♑", img: "/rashi/capricorn.webp" },
+  { name: "Kumbha", en: "Aquarius", symbol: "♒", img: "/rashi/aquarius.webp" },
+  { name: "Meena", en: "Pisces", symbol: "♓", img: "/rashi/pisces.webp" },
+];
+
 function ZodiacSection() {
   const [hovered, setHovered] = useState(null);
+  
+  // Track the flipped state of each card using an object { index: boolean }
+  const [flipped, setFlipped] = useState({});
+
+  const toggleFlip = (index) => {
+    setFlipped(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
   return (
     <section style={{ background: "#F2E6D2", padding: "5rem 1.5rem" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
@@ -523,22 +535,63 @@ function ZodiacSection() {
             Explore Your Rashi
           </h2>
         </div>
-        {/* Changed gridTemplateColumns to be automatically responsive */}
+        
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "1rem" }}>
           {ZODIAC_SIGNS.map((sign, i) => (
-            <div key={sign.name}
+            <button 
+              key={sign.name}
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
+              onClick={() => toggleFlip(i)}
               style={{
+                position: "relative",
+                overflow: "hidden",
                 background: hovered === i ? "rgba(196,132,90,0.12)" : "rgba(253,246,236,0.6)",
                 border: hovered === i ? "1px solid rgba(196,132,90,0.4)" : "1px solid rgba(196,132,90,0.15)",
-                borderRadius: 2, padding: "1.5rem 0.8rem", textAlign: "center", cursor: "pointer",
-                transition: "all 0.25s",
+                borderRadius: 4, 
+                padding: "2rem 0.8rem", 
+                textAlign: "center", 
+                cursor: "pointer",
+                transition: "background 0.3s ease, border 0.3s ease",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: "160px",
+                // Reset native button styles
+                outline: "none",
+                appearance: "none",
+                fontFamily: "inherit",
               }}>
-              <div style={{ fontSize: 32, marginBottom: 8, opacity: 0.75 }}>{sign.symbol}</div>
-              <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 16, color: "#2C1205", fontWeight: 600 }}>{sign.name}</div>
-              <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#C4845A", letterSpacing: 1 }}>{sign.en}</div>
-            </div>
+              
+              {/* Background Image Watermark with Flip Animation */}
+              <img 
+                src={sign.img} 
+                alt={`${sign.name} background`}
+                style={{
+                  position: "absolute",
+                  width: "120%", 
+                  height: "120%", 
+                  objectFit: "contain",
+                  opacity: 0.08, // Keeps it as a subtle watermark
+                  mixBlendMode: "multiply",
+                  zIndex: 0,
+                  // The linear 180deg mirror flip
+                  transform: flipped[i] ? "translate(-50%, -50%) rotateY(180deg)" : "translate(-50%, -50%) rotateY(0deg)",
+                  top: "50%",
+                  left: "50%",
+                  transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)", // Ease-in-out
+                  pointerEvents: "none", // Ensures it doesn't block clicks
+                }}
+              />
+
+              {/* Text Content (Layered above the image) */}
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <div style={{ fontSize: 32, marginBottom: 8, opacity: 0.85, color: "#C4845A" }}>{sign.symbol}</div>
+                <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 18, color: "#2C1205", fontWeight: 600 }}>{sign.name}</div>
+                <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 14, color: "#C4845A", letterSpacing: 1, marginTop: 4 }}>{sign.en}</div>
+              </div>
+            </button>
           ))}
         </div>
       </div>
