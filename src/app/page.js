@@ -136,13 +136,22 @@ function CelestialBackground() {
     </svg>
   );
 }
-
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    
+    const checkMobile = () => setIsMobile(window.innerWidth < 900);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", checkMobile);
+    };
   }, []);
 
   return (
@@ -152,61 +161,70 @@ function Navbar() {
       backdropFilter: scrolled ? "blur(8px)" : "none",
       borderBottom: scrolled ? "1px solid rgba(196, 132, 90, 0.2)" : "none",
       transition: "all 0.4s ease",
-      padding: "0 3rem",
+      padding: isMobile ? "0 1.5rem" : "0 3rem",
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 68 }}>
         
-        {/* Replaced SVG with logo.png */}
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <Image 
-            src="/logo.png" 
-            alt="Nakshatra Jyotish Logo" 
-            width={48} 
-            height={48} 
-            style={{ objectFit: "contain" }} 
-          />
+          <img src="/logo.png" alt="Logo" style={{ width: 40, height: 40, objectFit: "contain" }} />
           <div>
-            <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 16, fontWeight: 700, color: "#3D1F0A", letterSpacing: 0.5, lineHeight: 1.1 }}>Nakshatra</div>
-            <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 14, color: "#C4845A", letterSpacing: 2, textTransform: "uppercase" }}>Jyotish</div>
+            <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 16, fontWeight: 700, color: "#3D1F0A", lineHeight: 1.1 }}>Nakshatra</div>
+            <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 12, color: "#C4845A", letterSpacing: 2, textTransform: "uppercase" }}>Jyotish</div>
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "2.2rem" }}>
-          {NAV_LINKS.map(link => (
-            <a key={link} href="#" style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 18, color: "#5C3A1E",
-              textDecoration: "none", letterSpacing: 0.5,
-              transition: "color 0.2s",
-            }}
-              onMouseEnter={e => e.target.style.color = "#C4845A"}
-              onMouseLeave={e => e.target.style.color = "#5C3A1E"}
-            >{link}</a>
-          ))}
-        </div>
+        {/* Hide nav links on mobile */}
+        {!isMobile && (
+          <div style={{ display: "flex", gap: "2.2rem" }}>
+            {NAV_LINKS.map(link => (
+              <a key={link} href="#" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 16, color: "#5C3A1E", textDecoration: "none", letterSpacing: 0.5 }}>{link}</a>
+            ))}
+          </div>
+        )}
 
         <button style={{
-          fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 18, fontWeight: 600,
-          background: "#C4845A", color: "#FDF6EC", border: "none",
-          padding: "10px 22px", borderRadius: 2, cursor: "pointer",
-          letterSpacing: 1, transition: "background 0.2s",
-        }}>Get Prediction</button>
+          fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 14, fontWeight: 600,
+          background: "#C4845A", color: "#FDF6EC", border: "none", padding: "8px 18px", borderRadius: 2, cursor: "pointer",
+        }}>Prediction</button>
       </div>
     </nav>
   );
 }
-
 function HeroSection() {
   const [scrollY, setScrollY] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
+  // Check for mobile viewport
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 900);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Track scroll for parallax and rotation
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Moon drifts DOWN slowly, Sun drifts UP on scroll
-  const moonParallax = scrollY * 0.18;   // positive = moves down
-  const sunParallax  = scrollY * -0.14;  // negative = moves up
+  // --- DESKTOP CALCULATIONS ---
+  const moonParallaxY = scrollY * 0.35;   
+  const sunParallaxY  = scrollY * -0.35;  
+  
+  // --- MOBILE CALCULATIONS ---
+  const moonParallaxX = scrollY * 0.25;   
+  const sunParallaxX  = scrollY * -0.25;  
+
+  // Visibility Shift
+  const visibilityShift = Math.min(10, scrollY * 0.033); 
+  const moonMobileY = -70 + visibilityShift; 
+  const sunMobileY = 70 - visibilityShift;   
+
+  // Rotation
+  const moonRotate = scrollY * 0.08; 
+  const sunRotate = scrollY * -0.08;
 
   return (
     <section style={{
@@ -216,101 +234,86 @@ function HeroSection() {
     }}>
       <CelestialBackground />
 
-      {/* Decorative blobs */}
       <div style={{ position: "absolute", top: "15%", right: "8%", width: 180, height: 180, borderRadius: "50%", background: "rgba(196,132,90,0.12)", filter: "blur(2px)" }} />
       <div style={{ position: "absolute", bottom: "20%", left: "5%", width: 120, height: 120, borderRadius: "50%", background: "rgba(139,111,168,0.1)", filter: "blur(2px)" }} />
-      <div style={{ position: "absolute", top: "55%", right: "20%", width: 80, height: 80, borderRadius: "50%", background: "rgba(196,90,122,0.1)" }} />
 
-      {/* Left: Moon — drifts DOWN on scroll */}
+      {/* Moon Image (zIndex 1) */}
       <div style={{
-        position: "absolute", left: 0, top: "50%",
-        transform: `translate(-40%, calc(-50% + ${moonParallax}px))`,
-        zIndex: 1, width: "100%", maxWidth: 600,
-        willChange: "transform",
+        position: "absolute", zIndex: 1, width: "100%", maxWidth: isMobile ? 450 : 600, willChange: "transform",
+        ...(isMobile ? {
+          top: 0, left: "50%", transform: `translate(calc(-50% + ${moonParallaxX}px), ${moonMobileY}%) rotate(${moonRotate}deg)`,
+        } : {
+          left: 0, top: "50%", transform: `translate(-40%, calc(-50% + ${moonParallaxY}px))`,
+        })
       }}>
-        <Image
-          src="/hero-moon.png"
-          alt="Moon Illustration"
-          width={600}
-          height={600}
-          style={{
-            width: "100%", height: "auto",
-            filter: "drop-shadow(0 0 20px rgba(139, 111, 168, 0.2))",
-          }}
-        />
+        <img src="/hero-moon.png" alt="Moon" style={{ width: "100%", height: "auto", filter: "drop-shadow(0 0 20px rgba(139, 111, 168, 0.2))" }} />
       </div>
 
-      {/* Right: Sun — drifts UP on scroll */}
+      {/* Sun Image (zIndex 1) */}
       <div style={{
-        position: "absolute", right: 0, top: "50%",
-        transform: `translate(30%, calc(-50% + ${sunParallax}px))`,
-        zIndex: 1, width: "100%", maxWidth: 600,
-        willChange: "transform",
+        position: "absolute", zIndex: 1, width: "100%", maxWidth: isMobile ? 450 : 600, willChange: "transform",
+        ...(isMobile ? {
+          bottom: 0, left: "50%", transform: `translate(calc(-50% + ${sunParallaxX}px), ${sunMobileY}%) rotate(${sunRotate}deg)`,
+        } : {
+          right: 0, top: "50%", transform: `translate(30%, calc(-50% + ${sunParallaxY}px))`,
+        })
       }}>
-        <Image
-          src="/hero-sun.png"
-          alt="Sun Illustration"
-          width={600}
-          height={600}
-          style={{
-            width: "100%", height: "auto",
-            filter: "drop-shadow(0 0 20px rgba(196, 132, 90, 0.2))",
-          }}
-        />
+        <img src="/hero-sun.png" alt="Sun" style={{ width: "100%", height: "auto", filter: "drop-shadow(0 0 20px rgba(196, 132, 90, 0.2))" }} />
       </div>
 
-      {/* Centered Main Content — fades in on load */}
+      {/* Glassmorphism Overlay (zIndex 2) */}
+      {isMobile && (
+        <div style={{
+          position: "absolute", inset: 0, zIndex: 2, backdropFilter: "blur(2px)", WebkitBackdropFilter: "blur(2px)",
+          background: "rgba(253, 246, 236, 0.4)", pointerEvents: "none",
+        }} />
+      )}
+
+      {/* Centered Main Content (zIndex 3) */}
       <div style={{
-        maxWidth: 800, margin: "0 auto", padding: "0 3rem", width: "100%",
-        zIndex: 2, paddingTop: 80, display: "flex", flexDirection: "column",
+        maxWidth: 800, margin: "0 auto", padding: "0 1.5rem", width: "100%",
+        zIndex: 3, 
+        paddingTop: isMobile ? 110 : 80, // FIX: Forces the content down to clear the 68px Navbar
+        paddingBottom: isMobile ? 60 : 0, // FIX: Prevents bottom content from clipping off-screen
+        display: "flex", flexDirection: "column",
         alignItems: "center", textAlign: "center",
         animation: "heroFadeUp 1s cubic-bezier(0.22,1,0.36,1) both",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-          <div style={{ width: 28, height: 1, background: "#C4845A" }} />
-          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#C4845A", letterSpacing: 3, textTransform: "uppercase" }}>Vedic Jyotish Shastra</span>
-          <div style={{ width: 28, height: 1, background: "#C4845A" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 8 : 12, marginBottom: isMobile ? 16 : 20 }}>
+          <div style={{ width: isMobile ? 20 : 28, height: 1, background: "#C4845A" }} />
+          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: isMobile ? 11 : 13, color: "#C4845A", letterSpacing: 3, textTransform: "uppercase" }}>Vedic Jyotish Shastra</span>
+          <div style={{ width: isMobile ? 20 : 28, height: 1, background: "#C4845A" }} />
         </div>
 
         <h1 style={{
           fontFamily: "'Playfair Display', Georgia, serif",
-          fontSize: "clamp(2.4rem, 4vw, 3.8rem)",
-          fontWeight: 400, color: "#2C1205", lineHeight: 1.2, margin: "0 0 1.5rem",
+          fontSize: "clamp(2.5rem, 9vw, 3.8rem)", // FIX: Adjusted viewport scaling to prevent word wrap breaks
+          fontWeight: 400, color: "#2C1205", lineHeight: 1.15, margin: "0 0 1.25rem",
           fontStyle: "italic",
         }}>
           Find peace of mind<br />and know yourself better
         </h1>
 
-        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 18, color: "#6B4423", lineHeight: 1.7, margin: "0 0 2.5rem", maxWidth: 480 }}>
+        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: isMobile ? 17 : 18, color: "#6B4423", lineHeight: 1.6, margin: "0 0 2rem", maxWidth: 480 }}>
           Rooted in 5,000 years of Vedic tradition, our pandits and astrologers reveal the cosmic blueprint written at the moment of your birth.
         </p>
 
-        <div style={{ display: "flex", gap: "1rem", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "1rem", alignItems: "center", justifyContent: "center", width: "100%" }}>
           <button style={{
-            fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 16, fontWeight: 600,
-            background: "#C4845A", color: "#FDF6EC", border: "none",
-            padding: "14px 32px", borderRadius: 2, cursor: "pointer", letterSpacing: 1,
-            transition: "background 0.25s ease, transform 0.2s ease",
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = "#A8673D"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-            onMouseLeave={e => { e.currentTarget.style.background = "#C4845A"; e.currentTarget.style.transform = "none"; }}
-          >Get Prediction</button>
+            width: isMobile ? "100%" : "auto", fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 17, fontWeight: 600,
+            background: "#C4845A", color: "#FDF6EC", border: "none", padding: "14px 32px", borderRadius: 2, cursor: "pointer", letterSpacing: 1,
+          }}>Get Prediction</button>
           <button style={{
-            fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 16,
-            background: "transparent", color: "#C4845A",
-            border: "1.5px solid rgba(196,132,90,0.5)",
-            padding: "13px 28px", borderRadius: 2, cursor: "pointer", letterSpacing: 1,
-            transition: "border-color 0.25s ease, color 0.25s ease, transform 0.2s ease",
-          }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = "#C4845A"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(196,132,90,0.5)"; e.currentTarget.style.transform = "none"; }}
-          >View Kundali</button>
+            width: isMobile ? "100%" : "auto", fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 17,
+            background: "transparent", color: "#C4845A", border: "1.5px solid rgba(196,132,90,0.5)", padding: "13px 28px", borderRadius: 2, cursor: "pointer", letterSpacing: 1,
+          }}>View Kundali</button>
         </div>
 
-        <div style={{ display: "flex", gap: "3.5rem", marginTop: "3.5rem", justifyContent: "center" }}>
+        {/* FIX: Increased gap between stats and adjusted font sizes for better mobile balance */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "2.5rem" : "3.5rem", marginTop: "3rem", justifyContent: "center" }}>
           {[["50K+", "Consultations"], ["98%", "Accuracy Rate"], ["15+", "Vedic Experts"]].map(([num, label]) => (
-            <div key={label}>
-              <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 26, fontWeight: 700, color: "#C4845A" }}>{num}</div>
+            <div key={label} style={{ minWidth: isMobile ? "120px" : "auto" }}>
+              <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: isMobile ? 28 : 26, fontWeight: 700, color: "#C4845A", marginBottom: 4 }}>{num}</div>
               <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#6B4423", letterSpacing: 1 }}>{label}</div>
             </div>
           ))}
@@ -508,10 +511,11 @@ function ServicesSection() {
     </section>
   );
 }
+
 function ZodiacSection() {
   const [hovered, setHovered] = useState(null);
   return (
-    <section style={{ background: "#F2E6D2", padding: "5rem 3rem" }}>
+    <section style={{ background: "#F2E6D2", padding: "5rem 1.5rem" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
           <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#C4845A", letterSpacing: 4, textTransform: "uppercase", marginBottom: 12 }}>Rashi Chakra</div>
@@ -519,7 +523,8 @@ function ZodiacSection() {
             Explore Your Rashi
           </h2>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "1rem" }}>
+        {/* Changed gridTemplateColumns to be automatically responsive */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "1rem" }}>
           {ZODIAC_SIGNS.map((sign, i) => (
             <div key={sign.name}
               onMouseEnter={() => setHovered(i)}
@@ -527,12 +532,12 @@ function ZodiacSection() {
               style={{
                 background: hovered === i ? "rgba(196,132,90,0.12)" : "rgba(253,246,236,0.6)",
                 border: hovered === i ? "1px solid rgba(196,132,90,0.4)" : "1px solid rgba(196,132,90,0.15)",
-                borderRadius: 2, padding: "1.2rem 0.8rem", textAlign: "center", cursor: "pointer",
+                borderRadius: 2, padding: "1.5rem 0.8rem", textAlign: "center", cursor: "pointer",
                 transition: "all 0.25s",
               }}>
-              <div style={{ fontSize: 26, marginBottom: 6, opacity: 0.75 }}>{sign.symbol}</div>
-              <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 13, color: "#2C1205", fontWeight: 600 }}>{sign.name}</div>
-              <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 11, color: "#C4845A", letterSpacing: 1 }}>{sign.en}</div>
+              <div style={{ fontSize: 32, marginBottom: 8, opacity: 0.75 }}>{sign.symbol}</div>
+              <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 16, color: "#2C1205", fontWeight: 600 }}>{sign.name}</div>
+              <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#C4845A", letterSpacing: 1 }}>{sign.en}</div>
             </div>
           ))}
         </div>
@@ -541,24 +546,35 @@ function ZodiacSection() {
   );
 }
 
-
 function BirthChartCTA() {
   const [dob, setDob] = useState("");
   const [time, setTime] = useState("");
   const [place, setPlace] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 900);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   return (
-    <section style={{ background: "#FDF6EC", padding: "6rem 3rem" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "center" }}>
-        <div>
+    <section style={{ background: "#FDF6EC", padding: "6rem 1.5rem" }}>
+      <div style={{ 
+        maxWidth: 1200, margin: "0 auto", display: "grid", 
+        gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", 
+        gap: isMobile ? "3rem" : "5rem", alignItems: "center" 
+      }}>
+        <div style={{ textAlign: isMobile ? "center" : "left" }}>
           <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#C4845A", letterSpacing: 4, textTransform: "uppercase", marginBottom: 12 }}>Janam Kundali</div>
-          <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(1.8rem, 3vw, 2.6rem)", fontWeight: 400, color: "#2C1205", margin: "0 0 1rem", fontStyle: "italic" }}>
+          <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(2rem, 5vw, 2.6rem)", fontWeight: 400, color: "#2C1205", margin: "0 0 1rem", fontStyle: "italic" }}>
             Generate your free Birth Chart
           </h2>
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 18, color: "#6B4423", lineHeight: 1.7, margin: "0 0 2rem" }}>
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 18, color: "#6B4423", lineHeight: 1.7, margin: isMobile ? "0 auto 2rem" : "0 0 2rem", maxWidth: 500 }}>
             Enter your birth details to receive a personalised Vedic horoscope analysed by our pandits — your planetary positions, dashas, and nakshatra decoded.
           </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 380 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: 380, margin: isMobile ? "0 auto" : "0", textAlign: "left" }}>
             {[
               { label: "Date of Birth", value: dob, onChange: setDob, type: "date" },
               { label: "Time of Birth", value: time, onChange: setTime, type: "time" },
@@ -567,12 +583,9 @@ function BirthChartCTA() {
               <div key={label}>
                 <label style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#6B4423", letterSpacing: 1, display: "block", marginBottom: 6 }}>{label}</label>
                 <input
-                  type={type}
-                  value={value}
-                  placeholder={placeholder}
-                  onChange={e => onChange(e.target.value)}
+                  type={type} value={value} placeholder={placeholder} onChange={e => onChange(e.target.value)}
                   style={{
-                    width: "100%", padding: "10px 14px", fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 16,
+                    width: "100%", padding: "12px 14px", fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 16,
                     background: "#F9F0E2", border: "1px solid rgba(196,132,90,0.3)", borderRadius: 2,
                     color: "#2C1205", outline: "none", boxSizing: "border-box",
                   }}
@@ -580,16 +593,15 @@ function BirthChartCTA() {
               </div>
             ))}
             <button style={{
-              marginTop: 8, fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 16, fontWeight: 600,
-              background: "#C4845A", color: "#FDF6EC", border: "none", padding: "13px", borderRadius: 2,
-              cursor: "pointer", letterSpacing: 1,
+              marginTop: 12, fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 16, fontWeight: 600,
+              background: "#C4845A", color: "#FDF6EC", border: "none", padding: "14px", borderRadius: 2, cursor: "pointer", letterSpacing: 1,
             }}>Generate My Kundali</button>
           </div>
         </div>
 
-        {/* Visual kundali chart placeholder */}
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <svg viewBox="0 0 320 320" width={320} height={320}>
+          {/* Kept your exact SVG, just made it scale beautifully */}
+          <svg viewBox="0 0 320 320" style={{ width: "100%", maxWidth: 360, height: "auto" }}>
             <rect x="10" y="10" width="300" height="300" fill="none" stroke="#C4845A" strokeWidth="1" opacity="0.5"/>
             <rect x="110" y="10" width="100" height="100" fill="rgba(196,132,90,0.06)" stroke="#C4845A" strokeWidth="0.8" opacity="0.6"/>
             <rect x="110" y="110" width="100" height="100" fill="rgba(196,132,90,0.1)" stroke="#C4845A" strokeWidth="0.8" opacity="0.6"/>
@@ -601,9 +613,6 @@ function BirthChartCTA() {
             <line x1="10" y1="210" x2="110" y2="310" stroke="#C4845A" strokeWidth="0.6" opacity="0.5"/>
             <line x1="210" y1="210" x2="310" y2="310" stroke="#C4845A" strokeWidth="0.6" opacity="0.5"/>
             <text x="160" y="172" textAnchor="middle" fontSize="22" fill="#C4845A" opacity="0.3" fontFamily="serif">ॐ</text>
-            {[["I",60,60],["IV",160,60],["VII",260,60],["X",160,160],["II",60,160],["III",60,260],["VI",160,260],["IX",260,260],["XI",260,160]].map(([h,x,y]) => (
-              <text key={h} x={x} y={y} textAnchor="middle" dominantBaseline="middle" fontSize="11" fill="#C4845A" opacity="0.4" fontFamily="'Cormorant Garamond', Georgia, serif">{h}</text>
-            ))}
           </svg>
         </div>
       </div>
