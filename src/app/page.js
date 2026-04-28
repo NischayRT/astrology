@@ -515,15 +515,22 @@ const ZODIAC_SIGNS = [
 
 function ZodiacSection() {
   const [hovered, setHovered] = useState(null);
-  
-  // Track the flipped state of each card using an object { index: boolean }
   const [flipped, setFlipped] = useState({});
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check for mobile viewport to toggle between hover and click behaviors
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 900);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const toggleFlip = (index) => {
-    setFlipped(prev => ({
-      ...prev,
-      [index]: !prev[index]
-    }));
+    // Only use click-to-flip on mobile devices
+    if (isMobile) {
+      setFlipped(prev => ({ ...prev, [index]: !prev[index] }));
+    }
   };
 
   return (
@@ -537,62 +544,97 @@ function ZodiacSection() {
         </div>
         
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "1rem" }}>
-          {ZODIAC_SIGNS.map((sign, i) => (
-            <button 
-              key={sign.name}
-              onMouseEnter={() => setHovered(i)}
-              onMouseLeave={() => setHovered(null)}
-              onClick={() => toggleFlip(i)}
-              style={{
-                position: "relative",
-                overflow: "hidden",
-                background: hovered === i ? "rgba(196,132,90,0.12)" : "rgba(253,246,236,0.6)",
-                border: hovered === i ? "1px solid rgba(196,132,90,0.4)" : "1px solid rgba(196,132,90,0.15)",
-                borderRadius: 4, 
-                padding: "2rem 0.8rem", 
-                textAlign: "center", 
-                cursor: "pointer",
-                transition: "background 0.3s ease, border 0.3s ease",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: "160px",
-                // Reset native button styles
-                outline: "none",
-                appearance: "none",
-                fontFamily: "inherit",
-              }}>
-              
-              {/* Background Image Watermark with Flip Animation */}
-              <img 
-                src={sign.img} 
-                alt={`${sign.name} background`}
-                style={{
-                  position: "absolute",
-                  width: "120%", 
-                  height: "120%", 
-                  objectFit: "contain",
-                  opacity: 0.08, // Keeps it as a subtle watermark
-                  mixBlendMode: "multiply",
-                  zIndex: 0,
-                  // The linear 180deg mirror flip
-                  transform: flipped[i] ? "translate(-50%, -50%) rotateY(180deg)" : "translate(-50%, -50%) rotateY(0deg)",
-                  top: "50%",
-                  left: "50%",
-                  transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)", // Ease-in-out
-                  pointerEvents: "none", // Ensures it doesn't block clicks
-                }}
-              />
+          {ZODIAC_SIGNS.map((sign, i) => {
+            // Determine if the card is active based on device type
+            const isActive = isMobile ? flipped[i] : hovered === i;
 
-              {/* Text Content (Layered above the image) */}
-              <div style={{ position: "relative", zIndex: 1 }}>
-                <div style={{ fontSize: 32, marginBottom: 8, opacity: 0.85, color: "#C4845A" }}>{sign.symbol}</div>
-                <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 18, color: "#2C1205", fontWeight: 600 }}>{sign.name}</div>
-                <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 14, color: "#C4845A", letterSpacing: 1, marginTop: 4 }}>{sign.en}</div>
-              </div>
-            </button>
-          ))}
+            return (
+              <button 
+                key={sign.name}
+                onMouseEnter={() => !isMobile && setHovered(i)}
+                onMouseLeave={() => !isMobile && setHovered(null)}
+                onClick={() => toggleFlip(i)}
+                style={{
+                  position: "relative",
+                  overflow: "hidden",
+                  background: isActive ? "rgba(196,132,90,0.12)" : "rgba(253,246,236,0.6)",
+                  border: isActive ? "1px solid rgba(196,132,90,0.4)" : "1px solid rgba(196,132,90,0.15)",
+                  borderRadius: 4, 
+                  padding: "2rem 0.8rem", 
+                  textAlign: "center", 
+                  cursor: "pointer",
+                  transition: "background 0.4s ease, border 0.4s ease",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "190px", // FIX: Strict height prevents the grid row from expanding
+                  outline: "none",
+                  appearance: "none",
+                  fontFamily: "inherit",
+                }}>
+                
+                {/* Background Image Watermark */}
+                <img 
+                  src={sign.img} 
+                  alt={`${sign.name} background`}
+                  style={{
+                    position: "absolute",
+                    width: "120%", 
+                    height: "120%", 
+                    objectFit: "contain",
+                    opacity: isActive ? 0.18 : 0.08, 
+                    mixBlendMode: "multiply",
+                    zIndex: 0,
+                    transform: `translate(-50%, -50%) rotateY(${isActive ? 180 : 0}deg) scale(${isActive ? 1.15 : 1})`,
+                    top: "50%",
+                    left: "50%",
+                    transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease",
+                    pointerEvents: "none",
+                  }}
+                />
+
+                {/* Text Content - FIX: Uses transform: scale for butter-smooth resizing without layout shift */}
+                <div style={{ 
+                  position: "relative", 
+                  zIndex: 1, 
+                  transform: isActive ? "scale(1.12)" : "scale(1)", // Zooms the text cleanly
+                  transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)" 
+                }}>
+                  <div style={{ 
+                    fontSize: 32, // Static size
+                    marginBottom: 8, 
+                    opacity: 0.85, 
+                    color: "#C4845A",
+                  }}>
+                    {sign.symbol}
+                  </div>
+                  
+                  <div style={{ 
+                    fontFamily: "'Playfair Display', Georgia, serif", 
+                    fontSize: 18, // Static size
+                    color: "#2C1205", 
+                    fontWeight: isActive ? 700 : 600, // Dynamic weight
+                    transition: "font-weight 0.4s ease"
+                  }}>
+                    {sign.name}
+                  </div>
+                  
+                  <div style={{ 
+                    fontFamily: "'Cormorant Garamond', Georgia, serif", 
+                    fontSize: 14, // Static size
+                    fontWeight: isActive ? 600 : 400, // Dynamic weight
+                    color: "#C4845A", 
+                    letterSpacing: 1, 
+                    marginTop: 4,
+                    transition: "font-weight 0.4s ease"
+                  }}>
+                    {sign.en}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
     </section>
