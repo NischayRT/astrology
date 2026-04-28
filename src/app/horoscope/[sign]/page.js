@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ZODIAC_SIGNS } from "../../../data/constants"; 
 import Navbar from "../../../components/Navbar"; 
-
+import Image from "next/image";
 function StarRating({ rating }) {
   return (
     <div style={{ display: "flex", gap: 4, marginLeft: 12 }}>
@@ -103,7 +103,13 @@ export default function HoroscopeDetail() {
               </div>
             </div>
             
-            <img src={signData.img} alt={signData.name} style={{ width: 80, height: 80, objectFit: "contain", opacity: 0.9 }} />
+            <Image 
+              src={signData.img} 
+              alt={signData.name} 
+              width={80} 
+              height={80} 
+              style={{ objectFit: "contain", opacity: 0.9 }} 
+            />
           </div>
 
           {/* DYNAMIC DATE TABS */}
@@ -220,8 +226,14 @@ export default function HoroscopeDetail() {
                   </div>
                   
                   {showImage && (
-                    <img src={sign.img} alt={sign.name} style={{ width: 36, height: 36, objectFit: "contain", opacity: 0.85, animation: "fadeIn 0.3s ease" }} />
-                  )}
+  <Image 
+    src={sign.img} 
+    alt={sign.name} 
+    width={36} 
+    height={36} 
+    style={{ objectFit: "contain", opacity: 0.85, animation: "fadeIn 0.3s ease" }} 
+  />
+)}
                 </button>
               );
             })}

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
+import Image from "next/image"; 
 
-// Import your newly extracted components
 import Navbar from "../components/Navbar";
 import ZodiacSection from "../components/ZodiacSection";
 
@@ -126,7 +126,7 @@ function HeroSection() {
           left: 0, top: "50%", transform: `translate(-40%, calc(-50% + ${moonParallaxY}px))`,
         })
       }}>
-        <img src="/hero-moon.webp" alt="Moon" style={{ width: "100%", height: "auto", filter: "drop-shadow(0 0 20px rgba(139, 111, 168, 0.2))" }} />
+        <Image src="/hero-moon.webp" alt="Moon" width={600} height={600} style={{ width: "100%", height: "auto", filter: "drop-shadow(0 0 20px rgba(139, 111, 168, 0.2))" }} />
       </div>
 
       <div style={{
@@ -137,7 +137,7 @@ function HeroSection() {
           right: 0, top: "50%", transform: `translate(30%, calc(-50% + ${sunParallaxY}px))`,
         })
       }}>
-        <img src="/hero-sun.webp" alt="Sun" style={{ width: "100%", height: "auto", filter: "drop-shadow(0 0 20px rgba(196, 132, 90, 0.2))" }} />
+        <Image src="/hero-sun.webp" alt="Sun" width={600} height={600} style={{ width: "100%", height: "auto", filter: "drop-shadow(0 0 20px rgba(196, 132, 90, 0.2))" }} />
       </div>
 
       {isMobile && (
@@ -284,7 +284,13 @@ function ServicesSection() {
               const isActive = active === i;
               return (
                 <div key={svc.title} className={`svc-panel${isActive ? " active" : ""}`} onClick={() => handleClick(i)} style={{ height: isActive ? 420 : 200, borderRadius: 4 }}>
-                  <img src={svc.img} alt={svc.title} className="svc-img" />
+                  <Image 
+                    src={svc.img} 
+                    alt={svc.title} 
+                    width={320} 
+                    height={320} 
+                    className="svc-img" 
+                  />
                   <div className="svc-content">
                     <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 28, fontWeight: 400, color: "#2C1205", margin: 0 }}>{svc.title}</h3>
                     <div className="svc-desc"><p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 16, color: "#6B4423", lineHeight: 1.6, margin: "1rem 0 0" }}>{svc.desc}</p></div>
@@ -301,7 +307,7 @@ function ServicesSection() {
               const flexValue = active === null ? 1 : isActive ? 2 : 0.5;
               return (
                 <div key={svc.title} className={`svc-panel${isActive ? " active" : ""}`} onMouseEnter={() => handleEnter(i)} onMouseLeave={handleLeave} style={{ flex: flexValue, borderRadius: 4, minWidth: 0 }}>
-                  <img src={svc.img} alt={svc.title} className="svc-img" />
+                  <Image height={600} width={600} src={svc.img} alt={svc.title} className="svc-img" />
                   <div className="svc-content">
                     <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: isActive ? 34 : 26, fontWeight: 400, color: "#2C1205", margin: 0, transition: "font-size 0.4s ease" }}>{svc.title}</h3>
                     <div className="svc-desc"><p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 17, color: "#6B4423", lineHeight: 1.6, margin: "1rem 0 0" }}>{svc.desc}</p></div>

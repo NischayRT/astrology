@@ -1,8 +1,7 @@
-// src/components/ZodiacSection.js
-"use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ZODIAC_SIGNS } from "../data/constants";
+import Image from "next/image";
 
 export default function ZodiacSection() {
   const [hovered, setHovered] = useState(null);
@@ -98,13 +97,23 @@ export default function ZodiacSection() {
                   transform: isSelected ? "translateY(-4px)" : "translateY(0)",
                   boxShadow: isSelected ? "0 10px 20px rgba(196,132,90,0.1)" : "none",
                 }}>
-                <img src={sign.img} alt={`${sign.name}`} style={{
-                    position: "absolute", width: "100%", height: "100%", objectFit: "contain",
-                    opacity: isActive ? 0.18 : 0.08, mixBlendMode: "multiply", zIndex: 0,
+                <Image 
+                src={sign.img} 
+                alt={`${sign.name}`} 
+                fill
+                sizes="(max-width: 900px) 50vw, 16vw"
+                style={{
+                    objectFit: "contain",
+                    opacity: isActive ? 0.18 : 0.08, 
+                    mixBlendMode: "multiply", 
+                    zIndex: 0,
                     transform: `translate(-50%, -50%) rotateY(${isActive ? 180 : 0}deg) scale(${isActive ? 1.15 : 1})`,
-                    top: "50%", left: "50%", transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease",
+                    top: "50%", 
+                    left: "50%", 
+                    transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s ease",
                     pointerEvents: "none",
-                  }} />
+                }} 
+                />
                 <div style={{ position: "relative", zIndex: 1, transform: isActive ? "scale(1.12)" : "scale(1)", transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)" }}>
                   <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 18, color: "#2C1205", fontWeight: isActive ? 700 : 600 }}>{sign.name}</div>
                   <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 14, fontWeight: isActive ? 600 : 400, color: "#C4845A", letterSpacing: 1, marginTop: 4 }}>{sign.en}</div>

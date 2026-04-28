@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // NEW: Imports route detection
+import { usePathname } from "next/navigation";
 import { NAV_LINKS } from "../data/constants";
-
+import Image from "next/image"; 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -46,11 +46,11 @@ export default function Navbar() {
         
         {/* Logo - Acts as a button to go back home */}
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <img src="/logo.webp" alt="Logo" style={{ width: 40, height: 40, objectFit: "contain" }} />
-          <div>
-            <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 16, fontWeight: 700, color: "#3D1F0A", lineHeight: 1.1 }}>Nakshatra</div>
-            <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 12, color: "#C4845A", letterSpacing: 2, textTransform: "uppercase" }}>Jyotish</div>
-          </div>
+            <Image src="/logo.webp" alt="Logo" width={40} height={40} style={{ objectFit: "contain" }} />
+            <div>
+                <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 16, fontWeight: 700, color: "#3D1F0A", lineHeight: 1.1 }}>Nakshatra</div>
+                <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 12, color: "#C4845A", letterSpacing: 2, textTransform: "uppercase" }}>Jyotish</div>
+            </div>
         </Link>
 
         {/* Desktop Navigation Links */}
