@@ -102,6 +102,7 @@ export default function HoroscopeDetail() {
                 <div style={{ fontSize: 16, color: "#6B4423", letterSpacing: 1, textTransform: "uppercase" }}>{signData.en}</div>
               </div>
             </div>
+            
             <img src={signData.img} alt={signData.name} style={{ width: 80, height: 80, objectFit: "contain", opacity: 0.9 }} />
           </div>
 
@@ -212,7 +213,6 @@ export default function HoroscopeDetail() {
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <span style={{ fontSize: 24, color: "#C4845A" }}>{sign.symbol}</span>
                     <div>
                       <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 16, color: "#2C1205", fontWeight: 600 }}>{sign.name}</div>
                       <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#6B4423" }}>{sign.en}</div>

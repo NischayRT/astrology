@@ -106,7 +106,6 @@ export default function ZodiacSection() {
                     pointerEvents: "none",
                   }} />
                 <div style={{ position: "relative", zIndex: 1, transform: isActive ? "scale(1.12)" : "scale(1)", transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)" }}>
-                  <div style={{ fontSize: 32, marginBottom: 8, opacity: 0.85, color: "#C4845A" }}>{sign.symbol}</div>
                   <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 18, color: "#2C1205", fontWeight: isActive ? 700 : 600 }}>{sign.name}</div>
                   <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 14, fontWeight: isActive ? 600 : 400, color: "#C4845A", letterSpacing: 1, marginTop: 4 }}>{sign.en}</div>
                 </div>
