@@ -170,7 +170,7 @@ function HeroSection() {
 
       {isMobile && (
         <div style={{
-          position: "absolute", inset: 0, zIndex: 2, backdropFilter: "blur(2px)", WebkitBackdropFilter: "blur(2px)",
+          position: "absolute", inset: 0, zIndex: 2, backdropFilter: "blur(1px)", WebkitBackdropFilter: "blur(1px)",
           background: "rgba(253, 246, 236, 0.4)", pointerEvents: "none",
         }} />
       )}
