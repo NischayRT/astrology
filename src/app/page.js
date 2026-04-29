@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import Navbar from "../components/Navbar";
 import ZodiacSection from "../components/ZodiacSection";
-
+import HinduCalendar from "../components/HinduCalendar";
 const SERVICES_WITH_IMG = [
   {
     title: "Yantras",
@@ -235,27 +235,55 @@ function ServicesSection() {
           pointer-events: none;
         }
         
-        /* NEW: When active, center the image, fade it, and trigger the 3D continuous rotation */
+        /* 3D continuous rotation */
         .svc-panel.active .svc-img { 
           top: 50%; 
           opacity: 0.12; 
           animation: spinTilt 18s linear infinite; 
         }
         
-        /* NEW: The 3D spinning animation */
         @keyframes spinTilt {
-          0% { 
-            transform: translate(-50%, -50%) scale(1.2) perspective(800px) rotateX(40deg) rotateZ(0deg); 
-          }
-          100% { 
-            transform: translate(-50%, -50%) scale(1.2) perspective(800px) rotateX(40deg) rotateZ(360deg); 
-          }
+          0% { transform: translate(-50%, -50%) scale(1.2) perspective(800px) rotateX(40deg) rotateZ(0deg); }
+          100% { transform: translate(-50%, -50%) scale(1.2) perspective(800px) rotateX(40deg) rotateZ(360deg); }
         }
 
+        /* TEXT TRANSITIONS AND POSITIONING */
         .svc-content {
-          position: absolute; bottom: 0; left: 0; right: 0; padding: 2.5rem 2rem; z-index: 2;
+          position: absolute; bottom: 0; left: 0; right: 0; padding: 2.5rem 1.5rem 1.5rem; z-index: 2;
           display: flex; flex-direction: column; alignItems: center; text-align: center;
+          /* Start the text slightly lower down */
+          transform: translateY(20px); 
+          transition: transform 0.65s cubic-bezier(0.77,0,0.18,1), background 0.65s ease;
         }
+        
+        .svc-panel.active .svc-content { 
+          /* Slide the text up into full view when active */
+          transform: translateY(0); 
+          /* Add a gentle gradient overlay so text remains readable against the spinning image */
+          background: linear-gradient(to top, rgba(237,217,184,0.95) 0%, rgba(237,217,184,0.7) 60%, transparent 100%);
+        }
+
+        .svc-title {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: 28px;
+          font-weight: 400;
+          color: #2C1205;
+          margin: 0;
+          transition: color 0.5s ease, transform 0.5s ease, font-size 0.5s ease;
+        }
+
+        /* Highlight and scale the title when active */
+        .svc-panel.active .svc-title {
+          color: #C4845A;
+          transform: scale(1.05);
+        }
+
+        /* On desktop, make the title even larger when active */
+        @media (min-width: 900px) {
+          .svc-title { font-size: 26px; }
+          .svc-panel.active .svc-title { font-size: 34px; }
+        }
+
         .svc-desc { max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.65s cubic-bezier(0.77,0,0.18,1), opacity 0.45s ease; }
         .svc-panel.active .svc-desc { max-height: 200px; opacity: 1; }
         .svc-cta {
@@ -283,16 +311,11 @@ function ServicesSection() {
             {SERVICES_WITH_IMG.map((svc, i) => {
               const isActive = active === i;
               return (
-                <div key={svc.title} className={`svc-panel${isActive ? " active" : ""}`} onClick={() => handleClick(i)} style={{ height: isActive ? 420 : 200, borderRadius: 4 }}>
-                  <Image 
-                    src={svc.img} 
-                    alt={svc.title} 
-                    width={320} 
-                    height={320} 
-                    className="svc-img" 
-                  />
+                <div key={svc.title} className={`svc-panel${isActive ? " active" : ""}`} onClick={() => handleClick(i)} style={{ height: isActive ? 460 : 260, borderRadius: 4 }}>
+                  <Image src={svc.img} alt={svc.title} width={320} height={320} className="svc-img" />
                   <div className="svc-content">
-                    <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 28, fontWeight: 400, color: "#2C1205", margin: 0 }}>{svc.title}</h3>
+                    {/* Using the new .svc-title class for transitions */}
+                    <h3 className="svc-title">{svc.title}</h3>
                     <div className="svc-desc"><p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 16, color: "#6B4423", lineHeight: 1.6, margin: "1rem 0 0" }}>{svc.desc}</p></div>
                     <a href="#" className="svc-cta" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 15, fontWeight: 600, color: "#2C1205", textDecoration: "none", borderBottom: `1px solid rgba(44,18,5,0.3)`, paddingBottom: 4 }}>{svc.cta}</a>
                   </div>
@@ -309,7 +332,8 @@ function ServicesSection() {
                 <div key={svc.title} className={`svc-panel${isActive ? " active" : ""}`} onMouseEnter={() => handleEnter(i)} onMouseLeave={handleLeave} style={{ flex: flexValue, borderRadius: 4, minWidth: 0 }}>
                   <Image height={600} width={600} src={svc.img} alt={svc.title} className="svc-img" />
                   <div className="svc-content">
-                    <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: isActive ? 34 : 26, fontWeight: 400, color: "#2C1205", margin: 0, transition: "font-size 0.4s ease" }}>{svc.title}</h3>
+                    {/* Using the new .svc-title class for transitions */}
+                    <h3 className="svc-title">{svc.title}</h3>
                     <div className="svc-desc"><p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 17, color: "#6B4423", lineHeight: 1.6, margin: "1rem 0 0" }}>{svc.desc}</p></div>
                     <a href="#" className="svc-cta" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 15, fontWeight: 600, color: "#2C1205", textDecoration: "none", borderBottom: `1px solid rgba(44,18,5,0.3)`, paddingBottom: 4 }}>{svc.cta}</a>
                   </div>
@@ -424,7 +448,9 @@ export default function App() {
       <div id="daily-horoscope">
         <ZodiacSection />
       </div>
-      
+      {/* <section style={{ padding: "2.5rem 1rem" }}>
+         <HinduCalendar /> 
+      </section> */}
       <BirthChartCTA />
       <Footer />
     </div>

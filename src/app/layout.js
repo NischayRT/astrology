@@ -1,4 +1,5 @@
 // src/app/layout.js
+import WhatsAppButton from "../components/WhatsAppButton"; // ADD THIS IMPORT
 
 export const metadata = {
   title: "Nakshatra Jyotish",
@@ -9,7 +10,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* We moved the global fonts and CSS resets here so EVERY page gets them */}
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&display=swap');
           
@@ -32,6 +32,10 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         {children}
+        
+        {/* ADD THE BUTTON HERE! It will now float on top of every page. */}
+        <WhatsAppButton />
+        
       </body>
     </html>
   );

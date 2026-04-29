@@ -144,7 +144,21 @@ export default function ZodiacSection() {
                 <div style={{ marginTop: 24, fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 18, color: "#C4845A", fontStyle: "italic" }}>Consulting the stars...</div>
               ) : (
                 <>
-                  <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 19, color: "#6B4423", lineHeight: 1.7, maxWidth: 700, margin: "24px auto 0" }}>{horoscopeData}</p>
+                  <p 
+                    style={{ 
+                      fontFamily: "'Cormorant Garamond', Georgia, serif", 
+                      // Responsive sizing: minimum 16px, preferred 1.2vw, maximum 20px
+                      fontSize: "clamp(1rem, 1.2vw, 1.25rem)", 
+                      color: "#6B4423", 
+                      lineHeight: 1.7, 
+                      maxWidth: 700, 
+                      // margin: "24px 0 0" removes the 'auto' that was centering it horizontally
+                      margin: "24px 0 0",
+                      textAlign: "left" 
+                    }}
+                  >
+                    {horoscopeData}
+                  </p>
                   <div style={{ marginTop: "2.5rem" }}>
                     <Link href={`/horoscope/${ZODIAC_SIGNS[activeSign].en.toLowerCase()}`}
                       style={{ 
