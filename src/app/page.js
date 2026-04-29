@@ -95,6 +95,7 @@ function HeroSection() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // 1. Existing Parallax and 2D rotations
   const moonParallaxY = scrollY * 0.45;   
   const sunParallaxY  = scrollY * 0.45;  
   const moonParallaxX = scrollY * 0.35;   
@@ -107,6 +108,11 @@ function HeroSection() {
   const moonRotate = scrollY * 0.06; 
   const sunRotate = scrollY * -0.06;
 
+  // 2. NEW: 3D "Gate" Tilt Calculations (Capped at 85 degrees so they don't vanish entirely)
+  // Positive tilt pushes the inner edge backward. Negative tilt pushes the inner edge backward from the other side.
+  const gateTiltPos = Math.min(scrollY * 0.08, 85); 
+  const gateTiltNeg = Math.max(scrollY * -0.08, -85);
+
   return (
     <section id="services" style={{
       position: "relative", minHeight: "100vh", display: "flex", alignItems: "center",
@@ -118,6 +124,7 @@ function HeroSection() {
       <div style={{ position: "absolute", top: "15%", right: "8%", width: 180, height: 180, borderRadius: "50%", background: "rgba(196,132,90,0.12)", filter: "blur(2px)" }} />
       <div style={{ position: "absolute", bottom: "20%", left: "5%", width: 120, height: 120, borderRadius: "50%", background: "rgba(139,111,168,0.1)", filter: "blur(2px)" }} />
 
+      {/* LEFT / TOP GATE (MOON) */}
       <div style={{
         position: "absolute", zIndex: 1, width: "100%", maxWidth: isMobile ? 450 : 600, willChange: "transform",
         ...(isMobile ? {
@@ -126,9 +133,20 @@ function HeroSection() {
           left: 0, top: "50%", transform: `translate(-40%, calc(-50% + ${moonParallaxY}px))`,
         })
       }}>
-        <Image src="/hero-moon.webp" alt="Moon" width={600} height={600} style={{ width: "100%", height: "auto", filter: "drop-shadow(0 0 20px rgba(139, 111, 168, 0.2))" }} />
+        <Image src="/hero-moon.webp" alt="Moon" width={600} height={600} 
+          style={{ 
+            width: "100%", height: "auto", 
+            filter: "drop-shadow(0 0 20px rgba(139, 111, 168, 0.2))",
+            // NEW: Set the hinge point based on the screen size
+            transformOrigin: isMobile ? "top center" : "left center",
+            // NEW: Apply 3D perspective and axis rotation
+            transform: `perspective(1200px) ${isMobile ? `rotateX(${gateTiltPos}deg)` : `rotateY(${gateTiltPos}deg)`}`,
+            transition: "transform 0.1s ease-out" // smooths the scroll frame rate
+          }} 
+        />
       </div>
 
+      {/* RIGHT / BOTTOM GATE (SUN) */}
       <div style={{
         position: "absolute", zIndex: 1, width: "100%", maxWidth: isMobile ? 450 : 600, willChange: "transform",
         ...(isMobile ? {
@@ -137,7 +155,17 @@ function HeroSection() {
           right: 0, top: "50%", transform: `translate(30%, calc(-50% + ${sunParallaxY}px))`,
         })
       }}>
-        <Image src="/hero-sun.webp" alt="Sun" width={600} height={600} style={{ width: "100%", height: "auto", filter: "drop-shadow(0 0 20px rgba(196, 132, 90, 0.2))" }} />
+        <Image src="/hero-sun.webp" alt="Sun" width={600} height={600} 
+          style={{ 
+            width: "100%", height: "auto", 
+            filter: "drop-shadow(0 0 20px rgba(196, 132, 90, 0.2))",
+            // NEW: Set the hinge point based on the screen size
+            transformOrigin: isMobile ? "bottom center" : "right center",
+            // NEW: Apply 3D perspective and axis rotation
+            transform: `perspective(1200px) ${isMobile ? `rotateX(${gateTiltNeg}deg)` : `rotateY(${gateTiltNeg}deg)`}`,
+            transition: "transform 0.1s ease-out"
+          }} 
+        />
       </div>
 
       {isMobile && (
@@ -147,6 +175,7 @@ function HeroSection() {
         }} />
       )}
 
+      {/* Hero Content Wrapper */}
       <div style={{
         maxWidth: 800, margin: "0 auto", padding: "0 1.5rem", width: "100%",
         zIndex: 3, 
@@ -198,7 +227,6 @@ function HeroSection() {
     </section>
   );
 }
-
 function ServicesSection() {
   const [active, setActive] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -429,7 +457,7 @@ function Footer() {
           <a key={l} href="#" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#8B6240", textDecoration: "none", letterSpacing: 0.5 }}>{l}</a>
         ))}
       </div>
-      <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 12, color: "#5C3A1E" }}>© 2025 Nakshatra Jyotish · All Rights Reserved</div>
+      <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 12, color: "#5C3A1E" }}>© 2026 Nakshatra Jyotish · All Rights Reserved</div>
     </footer>
   );
 }
