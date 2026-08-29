@@ -16,7 +16,7 @@ export default function WhatsAppButton() {
     <a
       // REPLACE with your actual WhatsApp number (include country code, no + or spaces)
       // Example for India: 919876543210
-      href="https://wa.me/+919959629678" 
+      href="https://wa.me/+91918499881447" 
       target="_blank"
       rel="noopener noreferrer"
       onMouseEnter={() => setIsExpanded(true)}
