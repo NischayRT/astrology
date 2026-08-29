@@ -148,11 +148,12 @@ function CelestialBackground() {
   const [stars, setStars] = useState([]);
 
   useEffect(() => {
-    const generatedStars = Array.from({ length: 28 }, (_, i) => ({
+    const generatedStars = Array.from({ length: 34 }, () => ({
       cx: 10 + Math.random() * 80,
-      cy: 10 + Math.random() * 80,
-      r: 0.5 + Math.random() * 1,
-      opacity: 0.3 + Math.random() * 0.5,
+      cy: 8 + Math.random() * 84,
+      r: 0.5 + Math.random() * 1.1,
+      duration: 3 + Math.random() * 4,
+      delay: Math.random() * 4,
     }));
     setStars(generatedStars);
   }, []);
@@ -161,18 +162,32 @@ function CelestialBackground() {
     <svg
       viewBox="0 0 800 500"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.18 }}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.22 }}
       preserveAspectRatio="xMidYMid slice"
     >
+      <style>{`
+        @keyframes twinkle { 0%, 100% { opacity: 0.15; } 50% { opacity: 1; } }
+        @keyframes ringSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      `}</style>
       {stars.map((s, i) => (
-        <circle key={i} cx={`${s.cx}%`} cy={`${s.cy}%`} r={s.r * 1.5} fill="#7A5C3A" opacity={s.opacity} />
+        <circle
+          key={i}
+          cx={`${s.cx}%`}
+          cy={`${s.cy}%`}
+          r={s.r * 1.5}
+          fill="#7A5C3A"
+          style={{ animation: `twinkle ${s.duration}s ease-in-out ${s.delay}s infinite`, transformOrigin: "center" }}
+        />
       ))}
-      <circle cx="680" cy="80" r="80" fill="none" stroke="#7A5C3A" strokeWidth="0.7" strokeDasharray="4 6"/>
-      <circle cx="680" cy="80" r="55" fill="none" stroke="#7A5C3A" strokeWidth="0.5" strokeDasharray="2 4"/>
-      <circle cx="100" cy="380" r="60" fill="none" stroke="#7A5C3A" strokeWidth="0.7" strokeDasharray="3 5"/>
-      <path d="M640 80 Q680 30 720 80 Q680 130 640 80Z" fill="#7A5C3A" opacity="0.3"/>
-      <path d="M60 340 Q100 290 140 340 Q100 390 60 340Z" fill="#7A5C3A" opacity="0.2"/>
-      <text x="660" y="85" textAnchor="middle" fontSize="18" fill="#7A5C3A" opacity="0.6" fontFamily="serif">☽</text>
+      <g style={{ transformOrigin: "680px 80px", animation: "ringSpin 90s linear infinite" }}>
+        <circle cx="680" cy="80" r="80" fill="none" stroke="#7A5C3A" strokeWidth="0.7" strokeDasharray="4 6" />
+        <circle cx="680" cy="80" r="55" fill="none" stroke="#7A5C3A" strokeWidth="0.5" strokeDasharray="2 4" />
+      </g>
+      <g style={{ transformOrigin: "100px 380px", animation: "ringSpin 70s linear infinite reverse" }}>
+        <circle cx="100" cy="380" r="60" fill="none" stroke="#7A5C3A" strokeWidth="0.7" strokeDasharray="3 5" />
+      </g>
+      <path d="M640 80 Q680 30 720 80 Q680 130 640 80Z" fill="#7A5C3A" opacity="0.3" />
+      <path d="M60 340 Q100 290 140 340 Q100 390 60 340Z" fill="#7A5C3A" opacity="0.2" />
       <text x="370" y="60" textAnchor="middle" fontSize="12" fill="#7A5C3A" opacity="0.5" fontFamily="serif">✦</text>
       <text x="200" y="150" textAnchor="middle" fontSize="8" fill="#7A5C3A" opacity="0.4" fontFamily="serif">✦</text>
       <text x="500" y="200" textAnchor="middle" fontSize="10" fill="#7A5C3A" opacity="0.4" fontFamily="serif">✧</text>
@@ -180,6 +195,27 @@ function CelestialBackground() {
       <text x="120" y="220" textAnchor="middle" fontSize="10" fill="#7A5C3A" opacity="0.3" fontFamily="serif">✧</text>
     </svg>
   );
+}
+
+// Animated count-up used for the stats strip — runs once on mount.
+function CountUp({ to, suffix = "", duration = 1400 }) {
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    let start = null;
+    let raf;
+    const ease = (t) => 1 - Math.pow(1 - t, 3);
+    const step = (ts) => {
+      if (start === null) start = ts;
+      const progress = Math.min((ts - start) / duration, 1);
+      setValue(Math.round(ease(progress) * to));
+      if (progress < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [to, duration]);
+
+  return <>{value.toLocaleString()}{suffix}</>;
 }
 
 function HeroSection() {
@@ -209,23 +245,24 @@ function HeroSection() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const moonParallaxY = scrollY * 0.45;   
-  const sunParallaxY  = scrollY * 0.45;  
-  const moonParallaxX = scrollY * 0.35;   
-  const sunParallaxX  = scrollY * -0.35;  
+  // --- Same parallax/translation math as before — just re-skinned around it ---
+  const moonParallaxY = scrollY * 0.45;
+  const sunParallaxY  = scrollY * 0.45;
+  const moonParallaxX = scrollY * 0.35;
+  const sunParallaxX  = scrollY * -0.35;
 
-  const visibilityShift = Math.min(10, scrollY * 0.033); 
-  const moonMobileY = -60 + visibilityShift; 
-  const sunMobileY = 60 - visibilityShift;   
+  const visibilityShift = Math.min(10, scrollY * 0.033);
+  const moonMobileY = -60 + visibilityShift;
+  const sunMobileY = 60 - visibilityShift;
 
-  const moonRotate = scrollY * 0.06; 
+  const moonRotate = scrollY * 0.06;
   const sunRotate = scrollY * -0.06;
 
-  const gateTiltPos = Math.min(scrollY * 0.08, 85); 
+  const gateTiltPos = Math.min(scrollY * 0.08, 85);
   const gateTiltNeg = Math.max(scrollY * -0.08, -85);
 
   return (
-    <section id="services" style={{
+    <section style={{
       position: "relative", minHeight: "100vh", display: "flex", alignItems: "center",
       background: "linear-gradient(160deg, #FDF6EC 0%, #F5E8D2 40%, #EDD9B8 100%)",
       overflow: "hidden",
@@ -236,18 +273,64 @@ function HeroSection() {
         }
         @media (min-width: 900px) and (max-width: 1100px) {
           .hero-gate-wrapper {
-            max-width: 420px !important; /* 30% reduction from 600px */
+            max-width: 420px !important;
           }
+        }
+
+        @keyframes heroFadeUp {
+          from { opacity: 0; transform: translateY(24px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes auroraDrift {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(-3%, 4%) scale(1.08); }
+        }
+        @keyframes orbitSpin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes scrollCueBounce {
+          0%, 100% { transform: translateY(0); opacity: 0.5; }
+          50% { transform: translateY(8px); opacity: 1; }
+        }
+
+        .hero-reveal { animation: heroFadeUp 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+
+        .hero-btn-primary {
+          transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+          box-shadow: 0 10px 26px rgba(196,132,90,0.35);
+        }
+        .hero-btn-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 14px 32px rgba(196,132,90,0.45);
+          background: #a36e4b !important;
+        }
+        .hero-btn-secondary {
+          transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+        .hero-btn-secondary:hover {
+          background: rgba(196,132,90,0.1);
+          border-color: #C4845A !important;
+          transform: translateY(-2px);
         }
       `}</style>
 
       <CelestialBackground />
 
-      <div style={{ position: "absolute", top: "15%", right: "8%", width: 180, height: 180, borderRadius: "50%", background: "rgba(196,132,90,0.12)", filter: "blur(2px)" }} />
-      <div style={{ position: "absolute", bottom: "20%", left: "5%", width: 120, height: 120, borderRadius: "50%", background: "rgba(139,111,168,0.1)", filter: "blur(2px)" }} />
+      {/* Aurora glow blobs — slow ambient drift, sits behind everything */}
+      <div style={{
+        position: "absolute", top: "8%", right: "12%", width: 320, height: 320, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(139,111,168,0.22) 0%, rgba(139,111,168,0) 70%)",
+        filter: "blur(10px)", animation: "auroraDrift 14s ease-in-out infinite", pointerEvents: "none",
+      }} />
+      <div style={{
+        position: "absolute", bottom: "10%", left: "8%", width: 280, height: 280, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(196,132,90,0.22) 0%, rgba(196,132,90,0) 70%)",
+        filter: "blur(10px)", animation: "auroraDrift 18s ease-in-out infinite reverse", pointerEvents: "none",
+      }} />
 
       {/* LEFT / TOP GATE (MOON) */}
-      <div 
+      <div
         className="hero-gate-wrapper"
         style={{
           position: "absolute", zIndex: 1, width: "100%", willChange: "transform",
@@ -258,19 +341,24 @@ function HeroSection() {
           })
         }}
       >
+        {/* Orbit ring — subtle, continuously rotating, purely decorative */}
+        <div style={{
+          position: "absolute", inset: "8%", border: "1px dashed rgba(139,111,168,0.35)", borderRadius: "50%",
+          animation: "orbitSpin 50s linear infinite", pointerEvents: "none",
+        }} />
         <Image src="/hero-moon.webp" alt="Moon" width={600} height={600} priority
-          style={{ 
-            width: "100%", height: "auto", 
-            filter: "drop-shadow(0 0 20px rgba(139, 111, 168, 0.2))",
+          style={{
+            width: "100%", height: "auto",
+            filter: "drop-shadow(0 0 24px rgba(139, 111, 168, 0.25))",
             transformOrigin: isMobile ? "top center" : "left center",
             transform: `perspective(1200px) ${isMobile ? `rotateX(${gateTiltPos}deg)` : `rotateY(${gateTiltPos}deg)`}`,
-            transition: "transform 0.1s ease-out" 
-          }} 
+            transition: "transform 0.1s ease-out"
+          }}
         />
       </div>
 
       {/* RIGHT / BOTTOM GATE (SUN) */}
-      <div 
+      <div
         className="hero-gate-wrapper"
         style={{
           position: "absolute", zIndex: 1, width: "100%", willChange: "transform",
@@ -281,14 +369,18 @@ function HeroSection() {
           })
         }}
       >
+        <div style={{
+          position: "absolute", inset: "8%", border: "1px dashed rgba(196,132,90,0.35)", borderRadius: "50%",
+          animation: "orbitSpin 65s linear infinite reverse", pointerEvents: "none",
+        }} />
         <Image src="/hero-sun.webp" alt="Sun" width={600} height={600} priority
-          style={{ 
-            width: "100%", height: "auto", 
-            filter: "drop-shadow(0 0 20px rgba(196, 132, 90, 0.2))",
+          style={{
+            width: "100%", height: "auto",
+            filter: "drop-shadow(0 0 24px rgba(196, 132, 90, 0.25))",
             transformOrigin: isMobile ? "bottom center" : "right center",
             transform: `perspective(1200px) ${isMobile ? `rotateX(${gateTiltNeg}deg)` : `rotateY(${gateTiltNeg}deg)`}`,
             transition: "transform 0.1s ease-out"
-          }} 
+          }}
         />
       </div>
 
@@ -302,52 +394,101 @@ function HeroSection() {
       {/* Hero Content Wrapper */}
       <div style={{
         maxWidth: 800, margin: "0 auto", padding: "0 1.5rem", width: "100%",
-        zIndex: 3, 
-        paddingTop: isMobile ? 110 : 80, 
-        paddingBottom: isMobile ? 60 : 0, 
+        zIndex: 3,
+        paddingTop: isMobile ? 110 : 80,
+        paddingBottom: isMobile ? 60 : 0,
         display: "flex", flexDirection: "column",
         alignItems: "center", textAlign: "center",
-        animation: "heroFadeUp 1s cubic-bezier(0.22,1,0.36,1) both",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 8 : 12, marginBottom: isMobile ? 16 : 20 }}>
-          <div style={{ width: isMobile ? 20 : 28, height: 1, background: "#C4845A" }} />
-          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: isMobile ? 11 : 13, color: "#C4845A", letterSpacing: 3, textTransform: "uppercase" }}>Vedic Jyotish Shastra</span>
-          <div style={{ width: isMobile ? 20 : 28, height: 1, background: "#C4845A" }} />
+        {/* Badge — replaces the plain dashed eyebrow with a bordered pill */}
+        <div className="hero-reveal" style={{
+          display: "inline-flex", alignItems: "center", gap: 8,
+          background: "rgba(253,246,236,0.7)", border: "1px solid rgba(196,132,90,0.35)",
+          borderRadius: 999, padding: isMobile ? "6px 14px" : "7px 18px",
+          marginBottom: isMobile ? 20 : 24, backdropFilter: "blur(4px)",
+        }}>
+          <span style={{
+            width: 7, height: 7, borderRadius: "50%", background: "#C4845A",
+            animation: "twinkle 1.8s ease-in-out infinite",
+          }} />
+          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: isMobile ? 12 : 13, color: "#8B5A2B", letterSpacing: 2, textTransform: "uppercase", fontWeight: 600 }}>
+            Vedic Jyotish · 20 Years of Practice
+          </span>
         </div>
 
-        <h1 style={{
+        <h1 className="hero-reveal" style={{
           fontFamily: "'Playfair Display', Georgia, serif",
-          fontSize: "clamp(2.5rem, 9vw, 3.8rem)", 
-          fontWeight: 400, color: "#2C1205", lineHeight: 1.15, margin: "0 0 1.25rem",
-          fontStyle: "italic",
+          fontSize: "clamp(2.6rem, 9vw, 4rem)",
+          fontWeight: 400, color: "#2C1205", lineHeight: 1.12, margin: "0 0 1.25rem",
+          animationDelay: "0.08s",
         }}>
-          Find peace of mind<br />and know yourself better
+          Find peace of mind,<br />
+          <span style={{ fontStyle: "italic", color: "#C4845A" }}>know yourself</span> better
         </h1>
 
-        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: isMobile ? 17 : 18, color: "#6B4423", lineHeight: 1.6, margin: "0 0 2rem", maxWidth: 480 }}>
-          Rooted in 20 years of Vedic tradition, we reveal the cosmic blueprint written at the moment of your birth.
+        <p className="hero-reveal" style={{
+          fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: isMobile ? 17 : 19, color: "#6B4423",
+          lineHeight: 1.6, margin: "0 0 2rem", maxWidth: 500, animationDelay: "0.16s",
+        }}>
+          Rooted in two decades of Vedic tradition, we reveal the cosmic blueprint written at the moment of your birth.
         </p>
 
-        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "1rem", alignItems: "center", justifyContent: "center", width: "100%" }}>
-          <button style={{
-            width: isMobile ? "100%" : "auto", fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 17, fontWeight: 600,
-            background: "#C4845A", color: "#FDF6EC", border: "none", padding: "14px 32px", borderRadius: 2, cursor: "pointer", letterSpacing: 1,
-          }}>Book Consultation</button>
-          <button style={{
-            width: isMobile ? "100%" : "auto", fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 17,
-            background: "transparent", color: "#C4845A", border: "1.5px solid rgba(196,132,90,0.5)", padding: "13px 28px", borderRadius: 2, cursor: "pointer", letterSpacing: 1,
-          }}>View Services</button>
+        <div className="hero-reveal" style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "1rem", alignItems: "center", justifyContent: "center", width: "100%", animationDelay: "0.24s" }}>
+          <Link href="/contact" style={{ width: isMobile ? "100%" : "auto", textDecoration: "none" }}>
+            <button className="hero-btn-primary" style={{
+              width: "100%", fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 17, fontWeight: 600,
+              background: "#C4845A", color: "#FDF6EC", border: "none", padding: "14px 32px", borderRadius: 2, cursor: "pointer", letterSpacing: 1,
+            }}>Book Consultation</button>
+          </Link>
+          <Link href="/services" style={{ width: isMobile ? "100%" : "auto", textDecoration: "none" }}>
+            <button className="hero-btn-secondary" style={{
+              width: "100%", fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 17,
+              background: "transparent", color: "#C4845A", border: "1.5px solid rgba(196,132,90,0.5)", padding: "13px 28px", borderRadius: 2, cursor: "pointer", letterSpacing: 1,
+            }}>View Services</button>
+          </Link>
         </div>
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? "2.5rem" : "3.5rem", marginTop: "3rem", justifyContent: "center" }}>
-          {[["50K+", "Consultations"], ["98%", "Accuracy Rate"], ["20+", "Years Experience"]].map(([num, label]) => (
-            <div key={label} style={{ minWidth: isMobile ? "120px" : "auto" }}>
-              <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: isMobile ? 28 : 26, fontWeight: 700, color: "#C4845A", marginBottom: 4 }}>{num}</div>
-              <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#6B4423", letterSpacing: 1 }}>{label}</div>
+        {/* Stats strip — now a bordered glass card with animated count-up */}
+        <div className="hero-reveal" style={{
+          display: "flex", flexWrap: "wrap", gap: isMobile ? "1.75rem" : 0, marginTop: "3rem",
+          justifyContent: "center", width: isMobile ? "100%" : "auto",
+          background: isMobile ? "transparent" : "rgba(253,246,236,0.6)",
+          border: isMobile ? "none" : "1px solid rgba(196,132,90,0.2)",
+          borderRadius: isMobile ? 0 : 8,
+          padding: isMobile ? 0 : "1.25rem 2.5rem",
+          backdropFilter: isMobile ? "none" : "blur(6px)",
+          animationDelay: "0.32s",
+        }}>
+          {[
+            { num: 50000, suffix: "+", label: "Consultations" },
+            { num: 98, suffix: "%", label: "Accuracy Rate" },
+            { num: 20, suffix: "+", label: "Years Experience" },
+          ].map((stat, idx) => (
+            <div key={stat.label} style={{
+              minWidth: isMobile ? "120px" : "auto",
+              padding: isMobile ? 0 : "0 2rem",
+              borderLeft: !isMobile && idx > 0 ? "1px solid rgba(196,132,90,0.25)" : "none",
+            }}>
+              <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: isMobile ? 28 : 30, fontWeight: 700, color: "#C4845A", marginBottom: 4 }}>
+                <CountUp to={stat.num} suffix={stat.suffix} />
+              </div>
+              <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#6B4423", letterSpacing: 1 }}>{stat.label}</div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Scroll cue */}
+      {!isMobile && (
+        <div style={{
+          position: "absolute", bottom: 28, left: "50%", transform: "translateX(-50%)",
+          zIndex: 3, animation: "scrollCueBounce 2s ease-in-out infinite", pointerEvents: "none",
+        }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B5A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+      )}
     </section>
   );
 }

@@ -185,7 +185,7 @@ export default function Navbar() {
                   whiteSpace: "nowrap",
                 }}
               >
-                Nakshatra
+                Sri Astro
               </div>
               <div
                 style={{
