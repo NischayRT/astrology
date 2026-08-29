@@ -4,37 +4,20 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { NAV_LINKS } from "../data/constants";
-
-const ROUTES = {
-  Services: "/services",
-  Calendar: "/calendar",
-  Contact: "/contact",
-  About: "/about",
-};
-
-function getHref(link, isHome) {
-  if (ROUTES[link]) return ROUTES[link];
-  const targetId = link.toLowerCase().replace(/\s+/g, "-");
-  return isHome ? `#${targetId}` : `/#${targetId}`;
-}
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window !== "undefined" ? window.innerWidth < 900 : false
-  );
+  const [isMobile, setIsMobile] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  const isHome = pathname === "/";
-
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => setScrolled(window.scrollY > 20);
     onScroll();
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
 
-    const checkMobile = () => setIsMobile(window.innerWidth < 900);
+    // Hamburger trigger set to 620px
+    const checkMobile = () => setIsMobile(window.innerWidth <= 620);
     checkMobile();
     window.addEventListener("resize", checkMobile);
 
@@ -55,248 +38,286 @@ export default function Navbar() {
     };
   }, [isMenuOpen]);
 
-  const navBackground = isHome && !scrolled && !isMenuOpen ? "transparent" : "rgba(253, 246, 236, 0.95)";
-  const navBlur = isHome && !scrolled && !isMenuOpen ? "none" : "blur(8px)";
-  const navBorder = isHome && !scrolled && !isMenuOpen ? "none" : "1px solid rgba(196, 132, 90, 0.2)";
+  const isHome = pathname === "/";
+
+  const leftLinks = [
+    { label: "Services", href: "/services" },
+    { label: "About", href: "/about" },
+  ];
+
+  const rightLinks = [
+    { label: "Calendar", href: "/calendar" },
+    { label: "Contact", href: "/contact" },
+  ];
+
+  const allLinks = [...leftLinks, ...rightLinks];
 
   return (
     <>
       <style>{`
-        .nav-link {
+        .nav-item-link {
           position: relative;
-          padding-bottom: 6px;
-          transition: color 0.25s ease;
-        }
-        .nav-link::after {
-          content: "";
-          position: absolute;
-          left: 0;
-          right: 100%;
-          bottom: 0;
-          height: 2px;
-          background: #C4845A;
-          transition: right 0.25s ease;
-        }
-        .nav-link:hover {
-          color: #C4845A !important;
-        }
-        .nav-link:hover::after {
-          right: 0;
-        }
-        .nav-link.active {
-          color: #C4845A !important;
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-size: 16px;
           font-weight: 600;
-        }
-        .nav-link.active::after {
-          right: 0;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          color: #2C1205;
+          text-decoration: none;
+          padding: 6px 10px;
+          border-radius: 4px;
+          transition: all 0.25s ease;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
         }
 
-        .nav-link-mobile {
-          position: relative;
-          transition: color 0.25s ease, padding-left 0.25s ease;
+        .nav-item-link:hover {
+          color: #C4845A;
+          background: rgba(196, 132, 90, 0.08);
         }
-        .nav-link-mobile:hover {
-          color: #C4845A !important;
-          padding-left: 6px;
-        }
-        .nav-link-mobile.active {
-          color: #C4845A !important;
+
+        .nav-item-link.active {
+          color: #A35C2B;
           font-weight: 700;
         }
-        .nav-link-mobile.active::before {
+
+        .nav-item-link.active::after {
           content: "";
           position: absolute;
-          left: -14px;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: #C4845A;
+          bottom: 0px;
+          left: 10px;
+          right: 10px;
+          height: 1.5px;
+          background: linear-gradient(90deg, transparent, #C4845A, transparent);
         }
 
-        .cta-btn {
-          transition: background 0.25s ease, transform 0.15s ease;
-          display: inline-block;
+        .nav-center-brand {
+          display: flex;
+          align-items: center;
           text-decoration: none;
+          transition: all 0.3s ease;
         }
-        .cta-btn:hover {
-          background: #a36e4b !important;
-        }
-        .cta-btn:active {
-          transform: scale(0.97);
+
+        .nav-center-brand:hover {
+          transform: translateY(-1px);
         }
 
         .hamburger-btn {
-          transition: background 0.2s ease;
+          background: ${scrolled ? 'rgba(196, 132, 90, 0.12)' : 'rgba(253, 246, 236, 0.6)'};
+          border: 1px solid rgba(196, 132, 90, 0.3);
+          cursor: pointer;
+          padding: 6px;
           border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
         }
         .hamburger-btn:hover {
-          background: rgba(196,132,90,0.12);
+          background: rgba(196, 132, 90, 0.2);
         }
       `}</style>
 
-      <nav
+      <header
         style={{
           position: "fixed",
           top: 0,
           left: 0,
           right: 0,
           zIndex: 100,
-          backgroundColor: navBackground,
-          backdropFilter: navBlur,
-          WebkitBackdropFilter: navBlur,
-          borderBottom: navBorder,
-          transition: "all 0.4s ease",
-          padding: isMobile ? "0 1rem" : "0 3rem",
+          pointerEvents: "none",
+          padding: isMobile
+            ? "8px 12px"
+            : scrolled
+            ? "8px 24px"
+            : "14px 28px",
+          transition: "padding 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
-        <div
+        <nav
           style={{
-            maxWidth: 1200,
+            maxWidth: 1100,
             margin: "0 auto",
+            pointerEvents: "auto",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            height: 68,
+            background: scrolled
+              ? "rgba(253, 246, 236, 0.95)"
+              : "transparent",
+            backdropFilter: scrolled ? "blur(12px)" : "none",
+            WebkitBackdropFilter: scrolled ? "blur(12px)" : "none",
+            border: scrolled
+              ? "1px solid rgba(196, 132, 90, 0.24)"
+              : "1px solid transparent",
+            boxShadow: scrolled
+              ? "0 2px 8px rgba(44, 18, 5, 0.05)"
+              : "none",
+            borderRadius: 4,
+            padding: isMobile
+              ? scrolled ? "6px 12px" : "8px 10px"
+              : scrolled
+              ? "6px 24px"
+              : "10px 24px",
+            transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
           }}
         >
-          {/* Logo */}
-          <Link
-            href="/"
-            onClick={() => setIsMenuOpen(false)}
-            style={{ display: "flex", alignItems: "center", gap: 4, textDecoration: "none", flexShrink: 0 }}
-          >
-            <Image
-              src="/logo.webp"
-              alt="Logo"
-              width={isMobile ? 32 : 40}
-              height={isMobile ? 32 : 40}
-              style={{ objectFit: "contain" }}
-            />
-            <div>
-              <div
-                style={{
-                  fontFamily: "'Playfair Display', Georgia, serif",
-                  fontSize: isMobile ? 16 : 17,
-                  fontWeight: 700,
-                  color: "#3D1F0A",
-                  lineHeight: 1.1,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Sri Astro
-              </div>
-              <div
-                style={{
-                  fontFamily: "'Playfair Display', Georgia, serif",
-                  fontSize: isMobile ? 11 : 13,
-                  color: "#C4845A",
-                  letterSpacing: isMobile ? 1 : 2,
-                  textTransform: "uppercase",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Jyotish
-              </div>
-            </div>
-          </Link>
-
-          {/* Desktop Navigation Links */}
+          {/* DESKTOP/TABLET: Left Tabs (> 620px) */}
           {!isMobile && (
-            <div style={{ display: "flex", gap: "2.2rem" }}>
-              {NAV_LINKS.map((link) => {
-                const href = getHref(link, isHome);
-                const isActive = pathname === href;
-                return (
-                  <Link
-                    key={link}
-                    href={href}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`nav-link${isActive ? " active" : ""}`}
-                    style={{
-                      fontFamily: "'Cormorant Garamond', Georgia, serif",
-                      fontSize: 17,
-                      color: "#5C3A1E",
-                      textDecoration: "none",
-                      letterSpacing: 0.5,
-                    }}
-                  >
-                    {link}
-                  </Link>
-                );
-              })}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: scrolled ? "1.5rem" : "2.25rem",
+                flex: 1,
+                justifyContent: "flex-end",
+                paddingRight: scrolled ? "1.5rem" : "2.25rem",
+                transition: "all 0.3s ease",
+              }}
+            >
+              {leftLinks.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={`nav-item-link${pathname === item.href ? " active" : ""}`}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
           )}
 
-          {/* Right Side: CTA Button & Hamburger */}
-          <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "0.25rem" : "1rem" }}>
-            <Link
-              href="/contact#contact-form"
-              onClick={() => setIsMenuOpen(false)}
-              className="cta-btn"
+          {/* CENTER EMBLEM & LOGO */}
+          <Link
+            href="/"
+            onClick={() => setIsMenuOpen(false)}
+            className="nav-center-brand"
+            style={{
+              flexDirection: scrolled ? "row" : "column",
+              gap: scrolled ? (isMobile ? 8 : 10) : 2,
+              flexShrink: 0,
+              padding: "2px 6px",
+            }}
+          >
+            <div
               style={{
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
-                fontSize: isMobile ? 14 : 16,
-                fontWeight: 600,
-                background: "#C4845A",
-                color: "#FDF6EC",
-                padding: isMobile ? "6px 10px" : "10px 20px",
-                borderRadius: 2,
-                letterSpacing: isMobile ? 0.5 : 1,
-                whiteSpace: "nowrap",
-                textAlign: "center",
+                position: "relative",
+                width: isMobile ? (scrolled ? 28 : 34) : (scrolled ? 34 : 44),
+                height: isMobile ? (scrolled ? 28 : 34) : (scrolled ? 34 : 44),
+                transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
-              Get Consultation
-            </Link>
-
-            {/* Mobile Hamburger Icon */}
-            {isMobile && (
-              <button
-                onClick={() => setIsMenuOpen(true)}
-                aria-label="Open menu"
-                aria-expanded={isMenuOpen}
-                className="hamburger-btn"
+              <Image
+                src="/logo.webp"
+                alt="Sri Astro Jyotish"
+                fill
+                sizes="44px"
                 style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: "4px",
-                  display: "flex",
-                  alignItems: "center",
+                  objectFit: "contain",
+                  filter: "drop-shadow(0 1px 3px rgba(196,132,90,0.25))",
+                }}
+                priority
+              />
+            </div>
+
+            <div
+              style={{
+                textAlign: scrolled ? "left" : "center",
+                lineHeight: 1,
+                transition: "all 0.35s ease",
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "'Playfair Display', Georgia, serif",
+                  fontSize: isMobile ? (scrolled ? 14 : 15) : (scrolled ? 15.5 : 17),
+                  fontWeight: 700,
+                  color: "#2C1205",
+                  letterSpacing: scrolled ? 1.2 : 2,
+                  whiteSpace: "nowrap",
+                  textTransform: "uppercase",
                 }}
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3D1F0A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="3" y1="12" x2="21" y2="12"></line>
-                  <line x1="3" y1="6" x2="21" y2="6"></line>
-                  <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-              </button>
-            )}
-          </div>
-        </div>
-      </nav>
+                Sri Astro Jyotish
+              </div>
 
-      {/* MOBILE MENU OVERLAY & DRAWER */}
+              {!scrolled && !isMobile && (
+                <div
+                  style={{
+                    fontFamily: "'Cormorant Garamond', Georgia, serif",
+                    fontSize: 10.5,
+                    letterSpacing: 2.5,
+                    color: "#A35C2B",
+                    textTransform: "uppercase",
+                    fontWeight: 600,
+                    marginTop: 3,
+                  }}
+                >
+                  Vedic Wisdom
+                </div>
+              )}
+            </div>
+          </Link>
+
+          {/* DESKTOP/TABLET: Right Tabs (> 620px) */}
+          {!isMobile && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: scrolled ? "1.5rem" : "2.25rem",
+                flex: 1,
+                justifyContent: "flex-start",
+                paddingLeft: scrolled ? "1.5rem" : "2.25rem",
+                transition: "all 0.3s ease",
+              }}
+            >
+              {rightLinks.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={`nav-item-link${pathname === item.href ? " active" : ""}`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {/* MOBILE: Hamburger Button (<= 620px) */}
+          {isMobile && (
+            <button
+              onClick={() => setIsMenuOpen(true)}
+              aria-label="Open menu"
+              className="hamburger-btn"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2C1205" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            </button>
+          )}
+        </nav>
+      </header>
+
+      {/* MOBILE DRAWER (<= 620px) */}
       {isMobile && (
         <div
           style={{
             position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            inset: 0,
             zIndex: 1000,
-            background: "rgba(44, 18, 5, 0.5)",
+            background: "rgba(44, 18, 5, 0.4)",
             backdropFilter: "blur(4px)",
+            WebkitBackdropFilter: "blur(4px)",
             opacity: isMenuOpen ? 1 : 0,
             pointerEvents: isMenuOpen ? "auto" : "none",
-            transition: "opacity 0.4s ease",
+            transition: "opacity 0.3s ease",
           }}
           onClick={() => setIsMenuOpen(false)}
         >
-          {/* Drawer */}
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
@@ -304,54 +325,61 @@ export default function Navbar() {
               top: 0,
               right: 0,
               bottom: 0,
-              width: "75%",
+              width: "78%",
               maxWidth: 300,
               background: "#FDF6EC",
+              borderLeft: "1px solid rgba(196,132,90,0.3)",
               padding: "2rem 1.5rem",
               display: "flex",
               flexDirection: "column",
               transform: isMenuOpen ? "translateX(0)" : "translateX(100%)",
-              transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-              boxShadow: "-5px 0 25px rgba(0,0,0,0.15)",
-              overflowY: "auto",
+              transition: "transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+              boxShadow: "-4px 0 12px rgba(44,18,5,0.1)",
+              borderRadius: 0,
             }}
           >
-            {/* Close Button */}
-            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "3rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", borderBottom: "1px solid rgba(196,132,90,0.2)", paddingBottom: "1rem" }}>
+              <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 16, fontWeight: 700, color: "#2C1205" }}>
+                SRI ASTRO JYOTISH
+              </div>
               <button
                 onClick={() => setIsMenuOpen(false)}
                 aria-label="Close menu"
                 className="hamburger-btn"
-                style={{ background: "none", border: "none", cursor: "pointer", padding: "4px" }}
               >
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3D1F0A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2C1205" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
             </div>
 
-            {/* Mobile Nav Links */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-              {NAV_LINKS.map((link) => {
-                const href = getHref(link, isHome);
-                const isActive = pathname === href;
+            <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+              {allLinks.map((item) => {
+                const isActive = pathname === item.href;
                 return (
                   <Link
-                    key={link}
-                    href={href}
+                    key={item.label}
+                    href={item.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`nav-link-mobile${isActive ? " active" : ""}`}
                     style={{
                       fontFamily: "'Playfair Display', Georgia, serif",
-                      fontSize: 23,
-                      color: "#2C1205",
+                      fontSize: 18,
+                      letterSpacing: 1.5,
+                      textTransform: "uppercase",
+                      color: isActive ? "#A35C2B" : "#2C1205",
+                      fontWeight: isActive ? 700 : 500,
                       textDecoration: "none",
-                      borderBottom: "1px solid rgba(196,132,90,0.2)",
-                      paddingBottom: "1rem",
+                      padding: "8px 12px",
+                      borderRadius: 4,
+                      background: isActive ? "rgba(196,132,90,0.12)" : "transparent",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
                     }}
                   >
-                    {link}
+                    <span>{item.label}</span>
+                    {isActive && <span style={{ color: "#C4845A", fontSize: 14 }}>✦</span>}
                   </Link>
                 );
               })}

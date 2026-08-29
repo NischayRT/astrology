@@ -1,10 +1,10 @@
+// src/app/page.js
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image"; 
 import HinduCalendar from "../components/HinduCalendar";
 import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import { getDailyPanchang } from "../lib/panchang";
 
 const SERVICES_WITH_IMG = [
@@ -55,8 +55,6 @@ const SERVICES_WITH_IMG = [
   },
 ];
 
-
-// --- VASTU ENGINE CONSTANTS & RULES ---
 const VASTU_RULES = {
   main_door: {
     North: { score: 90, status: "positive", note: "Invites prosperity & Kuber energy." },
@@ -142,16 +140,14 @@ const LAGNA_LORD_DIRECTIONS = {
   Saturn: { fav: "West", unfav: "East", remedy: "Place heavy metal/stone elements in the West zone." },
 };
 
-// --- PAGE COMPONENTS ---
-
 function CelestialBackground() {
   const [stars, setStars] = useState([]);
 
   useEffect(() => {
-    const generatedStars = Array.from({ length: 34 }, () => ({
-      cx: 10 + Math.random() * 80,
-      cy: 8 + Math.random() * 84,
-      r: 0.5 + Math.random() * 1.1,
+    const generatedStars = Array.from({ length: 36 }, () => ({
+      cx: 8 + Math.random() * 84,
+      cy: 6 + Math.random() * 88,
+      r: 0.5 + Math.random() * 1.2,
       duration: 3 + Math.random() * 4,
       delay: Math.random() * 4,
     }));
@@ -162,11 +158,11 @@ function CelestialBackground() {
     <svg
       viewBox="0 0 800 500"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.22 }}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.25 }}
       preserveAspectRatio="xMidYMid slice"
     >
       <style>{`
-        @keyframes twinkle { 0%, 100% { opacity: 0.15; } 50% { opacity: 1; } }
+        @keyframes twinkle { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
         @keyframes ringSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
       {stars.map((s, i) => (
@@ -197,37 +193,9 @@ function CelestialBackground() {
   );
 }
 
-// Animated count-up used for the stats strip — runs once on mount.
-function CountUp({ to, suffix = "", duration = 1400 }) {
-  const [value, setValue] = useState(0);
-
-  useEffect(() => {
-    let start = null;
-    let raf;
-    const ease = (t) => 1 - Math.pow(1 - t, 3);
-    const step = (ts) => {
-      if (start === null) start = ts;
-      const progress = Math.min((ts - start) / duration, 1);
-      setValue(Math.round(ease(progress) * to));
-      if (progress < 1) raf = requestAnimationFrame(step);
-    };
-    raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [to, duration]);
-
-  return <>{value.toLocaleString()}{suffix}</>;
-}
-
+// src/app/page.js - HeroSection replacement only
 function HeroSection() {
   const [scrollY, setScrollY] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 900);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
 
   useEffect(() => {
     let ticking = false;
@@ -245,250 +213,236 @@ function HeroSection() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // --- Same parallax/translation math as before — just re-skinned around it ---
-  const moonParallaxY = scrollY * 0.45;
-  const sunParallaxY  = scrollY * 0.45;
-  const moonParallaxX = scrollY * 0.35;
-  const sunParallaxX  = scrollY * -0.35;
-
-  const visibilityShift = Math.min(10, scrollY * 0.033);
-  const moonMobileY = -60 + visibilityShift;
-  const sunMobileY = 60 - visibilityShift;
-
-  const moonRotate = scrollY * 0.06;
-  const sunRotate = scrollY * -0.06;
-
-  const gateTiltPos = Math.min(scrollY * 0.08, 85);
-  const gateTiltNeg = Math.max(scrollY * -0.08, -85);
+  const moonParallaxY = scrollY * 0.35;
+  const sunParallaxY  = scrollY * 0.35;
 
   return (
     <section style={{
-      position: "relative", minHeight: "100vh", display: "flex", alignItems: "center",
+      position: "relative",
+      minHeight: "100vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
       background: "linear-gradient(160deg, #FDF6EC 0%, #F5E8D2 40%, #EDD9B8 100%)",
       overflow: "hidden",
+      paddingTop: "100px",
+      paddingBottom: "3.5rem",
     }}>
       <style>{`
-        .hero-gate-wrapper {
-          max-width: ${isMobile ? '450px' : '600px'};
+        @keyframes heroFadeUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-        @media (min-width: 900px) and (max-width: 1100px) {
-          .hero-gate-wrapper {
-            max-width: 420px !important;
+        .hero-title-main {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: clamp(1.85rem, 5.2vw, 3.8rem);
+          font-weight: 500;
+          color: #2C1205;
+          letter-spacing: 2px;
+          line-height: 1.18;
+          text-transform: uppercase;
+        }
+        .hero-cta-btn {
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-size: 16px;
+          font-weight: 600;
+          letter-spacing: 1.5px;
+          text-transform: uppercase;
+          background: #C4845A;
+          color: #FDF6EC;
+          border: none;
+          padding: 14px 36px;
+          border-radius: 999px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 6px 20px rgba(196, 132, 90, 0.3);
+          text-decoration: none;
+          display: inline-block;
+        }
+        .hero-cta-btn:hover {
+          background: #a36e4b;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 24px rgba(196, 132, 90, 0.4);
+        }
+
+        /* --- RESPONSIVE CELESTIAL WEBP SIZES --- */
+        .hero-moon-wrap {
+          position: absolute;
+          left: -4%;
+          top: 10%;
+          width: 340px;
+          pointer-events: none;
+          z-index: 1;
+          opacity: 0.85;
+          transition: width 0.3s ease, opacity 0.3s ease;
+        }
+        .hero-sun-wrap {
+          position: absolute;
+          right: -5%;
+          bottom: -4%;
+          width: 400px;
+          pointer-events: none;
+          z-index: 1;
+          opacity: 0.9;
+          transition: width 0.3s ease, opacity 0.3s ease;
+        }
+
+        /* Mobile (Under 620px): soft and minimal */
+        @media (max-width: 620px) {
+          .hero-moon-wrap {
+            left: -20%;
+            top: 12%;
+            width: 170px;
+            opacity: 0.25;
+          }
+          .hero-sun-wrap {
+            right: -20%;
+            bottom: 2%;
+            width: 190px;
+            opacity: 0.3;
+          }
+          .hero-title-main {
+            letter-spacing: 1.5px;
+          }
+          .hero-cta-btn {
+            font-size: 14px;
+            padding: 11px 28px;
           }
         }
 
-        @keyframes heroFadeUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes auroraDrift {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          50% { transform: translate(-3%, 4%) scale(1.08); }
-        }
-        @keyframes orbitSpin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes scrollCueBounce {
-          0%, 100% { transform: translateY(0); opacity: 0.5; }
-          50% { transform: translateY(8px); opacity: 1; }
+        /* Tablet (620px to 800px): Visible, small sized */
+        @media (min-width: 621px) and (max-width: 800px) {
+          .hero-moon-wrap {
+            left: -8%;
+            top: 12%;
+            width: 220px;
+            opacity: 0.75;
+          }
+          .hero-sun-wrap {
+            right: -8%;
+            bottom: 0%;
+            width: 240px;
+            opacity: 0.8;
+          }
         }
 
-        .hero-reveal { animation: heroFadeUp 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+        /* Intermediate / Small Laptops (800px to 1100px): Big but smaller than standard */
+        @media (min-width: 801px) and (max-width: 1100px) {
+          .hero-moon-wrap {
+            left: -5%;
+            top: 10%;
+            width: 280px;
+            opacity: 0.82;
+          }
+          .hero-sun-wrap {
+            right: -6%;
+            bottom: -2%;
+            width: 310px;
+            opacity: 0.85;
+          }
+        }
 
-        .hero-btn-primary {
-          transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-          box-shadow: 0 10px 26px rgba(196,132,90,0.35);
-        }
-        .hero-btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 14px 32px rgba(196,132,90,0.45);
-          background: #a36e4b !important;
-        }
-        .hero-btn-secondary {
-          transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-        }
-        .hero-btn-secondary:hover {
-          background: rgba(196,132,90,0.1);
-          border-color: #C4845A !important;
-          transform: translateY(-2px);
+        /* Extra Large Desktops (from 1430px up): Increased size */
+        @media (min-width: 1430px) {
+          .hero-moon-wrap {
+            left: -3%;
+            top: 8%;
+            width: 410px;
+            opacity: 0.9;
+          }
+          .hero-sun-wrap {
+            right: -4%;
+            bottom: -5%;
+            width: 480px;
+            opacity: 0.95;
+          }
         }
       `}</style>
 
       <CelestialBackground />
 
-      {/* Aurora glow blobs — slow ambient drift, sits behind everything */}
-      <div style={{
-        position: "absolute", top: "8%", right: "12%", width: 320, height: 320, borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(139,111,168,0.22) 0%, rgba(139,111,168,0) 70%)",
-        filter: "blur(10px)", animation: "auroraDrift 14s ease-in-out infinite", pointerEvents: "none",
-      }} />
-      <div style={{
-        position: "absolute", bottom: "10%", left: "8%", width: 280, height: 280, borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(196,132,90,0.22) 0%, rgba(196,132,90,0) 70%)",
-        filter: "blur(10px)", animation: "auroraDrift 18s ease-in-out infinite reverse", pointerEvents: "none",
-      }} />
-
-      {/* LEFT / TOP GATE (MOON) */}
-      <div
-        className="hero-gate-wrapper"
-        style={{
-          position: "absolute", zIndex: 1, width: "100%", willChange: "transform",
-          ...(isMobile ? {
-            top: 0, left: "50%", transform: `translate(calc(-50% + ${moonParallaxX}px), ${moonMobileY}%) rotate(${moonRotate}deg)`,
-          } : {
-            left: 0, top: "50%", transform: `translate(-40%, calc(-50% + ${moonParallaxY}px))`,
-          })
-        }}
+      {/* LEFT MOON ELEMENT */}
+      <div 
+        className="hero-moon-wrap"
+        style={{ transform: `translateY(${moonParallaxY}px)` }}
       >
-        {/* Orbit ring — subtle, continuously rotating, purely decorative */}
-        <div style={{
-          position: "absolute", inset: "8%", border: "1px dashed rgba(139,111,168,0.35)", borderRadius: "50%",
-          animation: "orbitSpin 50s linear infinite", pointerEvents: "none",
-        }} />
-        <Image src="/hero-moon.webp" alt="Moon" width={600} height={600} priority
-          style={{
-            width: "100%", height: "auto",
-            filter: "drop-shadow(0 0 24px rgba(139, 111, 168, 0.25))",
-            transformOrigin: isMobile ? "top center" : "left center",
-            transform: `perspective(1200px) ${isMobile ? `rotateX(${gateTiltPos}deg)` : `rotateY(${gateTiltPos}deg)`}`,
-            transition: "transform 0.1s ease-out"
-          }}
+        <Image
+          src="/hero-moon.webp"
+          alt="Moon"
+          width={410}
+          height={410}
+          style={{ width: "100%", height: "auto", filter: "drop-shadow(0 0 20px rgba(139,111,168,0.2))" }}
+          priority
         />
       </div>
 
-      {/* RIGHT / BOTTOM GATE (SUN) */}
-      <div
-        className="hero-gate-wrapper"
-        style={{
-          position: "absolute", zIndex: 1, width: "100%", willChange: "transform",
-          ...(isMobile ? {
-            bottom: 0, left: "50%", transform: `translate(calc(-50% + ${sunParallaxX}px), ${sunMobileY}%) rotate(${sunRotate}deg)`,
-          } : {
-            right: 0, top: "50%", transform: `translate(30%, calc(-50% + ${sunParallaxY}px))`,
-          })
-        }}
+      {/* RIGHT SUN ELEMENT */}
+      <div 
+        className="hero-sun-wrap"
+        style={{ transform: `translateY(${-sunParallaxY}px)` }}
       >
-        <div style={{
-          position: "absolute", inset: "8%", border: "1px dashed rgba(196,132,90,0.35)", borderRadius: "50%",
-          animation: "orbitSpin 65s linear infinite reverse", pointerEvents: "none",
-        }} />
-        <Image src="/hero-sun.webp" alt="Sun" width={600} height={600} priority
-          style={{
-            width: "100%", height: "auto",
-            filter: "drop-shadow(0 0 24px rgba(196, 132, 90, 0.25))",
-            transformOrigin: isMobile ? "bottom center" : "right center",
-            transform: `perspective(1200px) ${isMobile ? `rotateX(${gateTiltNeg}deg)` : `rotateY(${gateTiltNeg}deg)`}`,
-            transition: "transform 0.1s ease-out"
-          }}
+        <Image
+          src="/hero-sun.webp"
+          alt="Sun"
+          width={480}
+          height={480}
+          style={{ width: "100%", height: "auto", filter: "drop-shadow(0 0 25px rgba(196,132,90,0.2))" }}
+          priority
         />
       </div>
 
-      {isMobile && (
-        <div style={{
-          position: "absolute", inset: 0, zIndex: 2, backdropFilter: "blur(1px)", WebkitBackdropFilter: "blur(1px)",
-          background: "rgba(253, 246, 236, 0.4)", pointerEvents: "none",
-        }} />
-      )}
-
-      {/* Hero Content Wrapper */}
+      {/* HERO CENTER CONTENT */}
       <div style={{
-        maxWidth: 800, margin: "0 auto", padding: "0 1.5rem", width: "100%",
-        zIndex: 3,
-        paddingTop: isMobile ? 110 : 80,
-        paddingBottom: isMobile ? 60 : 0,
-        display: "flex", flexDirection: "column",
-        alignItems: "center", textAlign: "center",
+        maxWidth: 820,
+        margin: "0 auto",
+        padding: "0 1.25rem",
+        zIndex: 2,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        textAlign: "center",
+        animation: "heroFadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) both",
       }}>
-        {/* Badge — replaces the plain dashed eyebrow with a bordered pill */}
-        <div className="hero-reveal" style={{
-          display: "inline-flex", alignItems: "center", gap: 8,
-          background: "rgba(253,246,236,0.7)", border: "1px solid rgba(196,132,90,0.35)",
-          borderRadius: 999, padding: isMobile ? "6px 14px" : "7px 18px",
-          marginBottom: isMobile ? 20 : 24, backdropFilter: "blur(4px)",
-        }}>
-          <span style={{
-            width: 7, height: 7, borderRadius: "50%", background: "#C4845A",
-            animation: "twinkle 1.8s ease-in-out infinite",
-          }} />
-          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: isMobile ? 12 : 13, color: "#8B5A2B", letterSpacing: 2, textTransform: "uppercase", fontWeight: 600 }}>
-            Vedic Jyotish · 20 Years of Practice
+        
+        {/* Decorative eyebrow */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+          <div style={{ width: 24, height: 1, background: "#C4845A" }} />
+          <span style={{ 
+            fontFamily: "'Cormorant Garamond', Georgia, serif", 
+            fontSize: 13, 
+            color: "#C4845A", 
+            letterSpacing: 3, 
+            textTransform: "uppercase", 
+            fontWeight: 600 
+          }}>
+            Vedic Jyotish &amp; Vaastu Shastra
           </span>
+          <div style={{ width: 24, height: 1, background: "#C4845A" }} />
         </div>
 
-        <h1 className="hero-reveal" style={{
-          fontFamily: "'Playfair Display', Georgia, serif",
-          fontSize: "clamp(2.6rem, 9vw, 4rem)",
-          fontWeight: 400, color: "#2C1205", lineHeight: 1.12, margin: "0 0 1.25rem",
-          animationDelay: "0.08s",
-        }}>
-          Find peace of mind,<br />
-          <span style={{ fontStyle: "italic", color: "#C4845A" }}>know yourself</span> better
+        {/* Center Heading */}
+        <h1 className="hero-title-main" style={{ margin: "0 0 1.15rem" }}>
+          Get Clarity, Guidance<br />and Peace of Mind
         </h1>
 
-        <p className="hero-reveal" style={{
-          fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: isMobile ? 17 : 19, color: "#6B4423",
-          lineHeight: 1.6, margin: "0 0 2rem", maxWidth: 500, animationDelay: "0.16s",
+        {/* Subtitle */}
+        <p style={{
+          fontFamily: "'Cormorant Garamond', Georgia, serif",
+          fontSize: 18,
+          color: "#6B4423",
+          lineHeight: 1.55,
+          maxWidth: "540px",
+          margin: "0 0 2.25rem",
+          letterSpacing: 0.3,
         }}>
-          Rooted in two decades of Vedic tradition, we reveal the cosmic blueprint written at the moment of your birth.
+          Rooted in twenty years of sacred Vedic lineage. We decode your birth chart and energy dynamics to provide actionable, life-transforming remedies.
         </p>
 
-        <div className="hero-reveal" style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: "1rem", alignItems: "center", justifyContent: "center", width: "100%", animationDelay: "0.24s" }}>
-          <Link href="/contact" style={{ width: isMobile ? "100%" : "auto", textDecoration: "none" }}>
-            <button className="hero-btn-primary" style={{
-              width: "100%", fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 17, fontWeight: 600,
-              background: "#C4845A", color: "#FDF6EC", border: "none", padding: "14px 32px", borderRadius: 2, cursor: "pointer", letterSpacing: 1,
-            }}>Book Consultation</button>
-          </Link>
-          <Link href="/services" style={{ width: isMobile ? "100%" : "auto", textDecoration: "none" }}>
-            <button className="hero-btn-secondary" style={{
-              width: "100%", fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 17,
-              background: "transparent", color: "#C4845A", border: "1.5px solid rgba(196,132,90,0.5)", padding: "13px 28px", borderRadius: 2, cursor: "pointer", letterSpacing: 1,
-            }}>View Services</button>
-          </Link>
-        </div>
-
-        {/* Stats strip — now a bordered glass card with animated count-up */}
-        <div className="hero-reveal" style={{
-          display: "flex", flexWrap: "wrap", gap: isMobile ? "1.75rem" : 0, marginTop: "3rem",
-          justifyContent: "center", width: isMobile ? "100%" : "auto",
-          background: isMobile ? "transparent" : "rgba(253,246,236,0.6)",
-          border: isMobile ? "none" : "1px solid rgba(196,132,90,0.2)",
-          borderRadius: isMobile ? 0 : 8,
-          padding: isMobile ? 0 : "1.25rem 2.5rem",
-          backdropFilter: isMobile ? "none" : "blur(6px)",
-          animationDelay: "0.32s",
-        }}>
-          {[
-            { num: 50000, suffix: "+", label: "Consultations" },
-            { num: 98, suffix: "%", label: "Accuracy Rate" },
-            { num: 20, suffix: "+", label: "Years Experience" },
-          ].map((stat, idx) => (
-            <div key={stat.label} style={{
-              minWidth: isMobile ? "120px" : "auto",
-              padding: isMobile ? 0 : "0 2rem",
-              borderLeft: !isMobile && idx > 0 ? "1px solid rgba(196,132,90,0.25)" : "none",
-            }}>
-              <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: isMobile ? 28 : 30, fontWeight: 700, color: "#C4845A", marginBottom: 4 }}>
-                <CountUp to={stat.num} suffix={stat.suffix} />
-              </div>
-              <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#6B4423", letterSpacing: 1 }}>{stat.label}</div>
-            </div>
-          ))}
-        </div>
+        {/* Centered Action Button */}
+        <Link href="/contact" className="hero-cta-btn">
+          Book Consultation Now
+        </Link>
       </div>
-
-      {/* Scroll cue */}
-      {!isMobile && (
-        <div style={{
-          position: "absolute", bottom: 28, left: "50%", transform: "translateX(-50%)",
-          zIndex: 3, animation: "scrollCueBounce 2s ease-in-out infinite", pointerEvents: "none",
-        }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B5A2B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </div>
-      )}
     </section>
   );
 }
@@ -549,10 +503,9 @@ function ServicesSection() {
           transition: transform 0.65s cubic-bezier(0.77,0,0.18,1), background 0.65s ease, padding 0.3s ease;
         }
 
-        /* REMOVE PADDING UP TO 400px */
         @media (max-width: 400px) {
           .svc-content {
-            padding: 0 !important;
+            padding: 1.5rem 0.5rem !important;
           }
         }
         
@@ -641,12 +594,10 @@ function ServicesSection() {
   );
 }
 
-// --- VASTU & ASTRO-VASTU COMPONENT ---
 function VastuCheckerSection() {
-  const [mode, setMode] = useState("basic"); // 'basic' | 'astro'
+  const [mode, setMode] = useState("basic");
   const [isMobile, setIsMobile] = useState(false);
 
-  // Form states
   const [directions, setDirections] = useState({
     main_door: "",
     kitchen: "",
@@ -657,7 +608,7 @@ function VastuCheckerSection() {
   });
 
   const [astroForm, setAstroForm] = useState({
-    lagnaRashi: "1", // 1 to 12
+    lagnaRashi: "1",
     nakshatraDirection: "East",
     dashaLord: "Jupiter"
   });
@@ -712,7 +663,6 @@ function VastuCheckerSection() {
         neutrals,
       });
     } else {
-      // ASTRO-VASTU CALCULATION
       const lagnaIdx = parseInt(astroForm.lagnaRashi) - 1;
       const lagnaLord = RASHI_LORDS[lagnaIdx];
       const lordPrefs = LAGNA_LORD_DIRECTIONS[lagnaLord] || LAGNA_LORD_DIRECTIONS["Sun"];
@@ -799,8 +749,6 @@ function VastuCheckerSection() {
   return (
     <section id="vastu" style={{ background: "#FDF6EC", padding: "6rem 1.5rem", borderTop: "1px solid rgba(196,132,90,0.15)" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        
-        {/* Section Header */}
         <div style={{ textAlign: "center", marginBottom: "3rem" }}>
           <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#C4845A", letterSpacing: 4, textTransform: "uppercase", marginBottom: 12 }}>
             Vastu & Astro-Vastu Diagnostic
@@ -812,7 +760,6 @@ function VastuCheckerSection() {
             Every home is an energetic vessel. Discover whether your home structure uplifts your household prosperity or clashes with your birth chart.
           </p>
 
-          {/* Mode Switch Tabs */}
           <div style={{ display: "inline-flex", background: "rgba(196,132,90,0.12)", padding: 4, borderRadius: 30, marginTop: "2rem" }}>
             <button
               onClick={() => { setMode("basic"); setResult(null); }}
@@ -839,16 +786,12 @@ function VastuCheckerSection() {
           </div>
         </div>
 
-        {/* Dynamic Container */}
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : result ? "1fr 1.1fr" : "1fr", gap: "2.5rem", alignItems: "start" }}>
-          
-          {/* Input Configuration Box */}
           <div style={{ background: "#F5E8D2", padding: isMobile ? "1.5rem" : "2.5rem", borderRadius: 4, border: "1px solid rgba(196,132,90,0.2)" }}>
             <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 22, color: "#2C1205", marginBottom: "1.5rem", fontStyle: "italic" }}>
               {mode === "basic" ? "Enter Your Layout Directions" : "Birth Chart & Directional Calibration"}
             </h3>
 
-            {/* Direction Selectors */}
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "1rem" }}>
               {Object.keys(FIELD_LABELS).map(key => (
                 <div key={key}>
@@ -872,7 +815,6 @@ function VastuCheckerSection() {
               ))}
             </div>
 
-            {/* Astro-Vastu Personalized Fields */}
             {mode === "astro" && (
               <div style={{ marginTop: "1rem", paddingTop: "1.5rem", borderTop: "1px dashed rgba(196,132,90,0.3)" }}>
                 <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 18, color: "#C4845A", marginBottom: "1rem" }}>
@@ -935,11 +877,8 @@ function VastuCheckerSection() {
             </button>
           </div>
 
-          {/* Results Output Screen */}
           {result && (
             <div style={{ background: "#FDF6EC", border: "1px solid rgba(196,132,90,0.3)", borderRadius: 4, padding: isMobile ? "1.5rem" : "2.5rem", boxShadow: "0 10px 25px rgba(196,132,90,0.08)" }}>
-              
-              {/* Radial Meter */}
               <div style={{ textAlign: "center", marginBottom: "2rem" }}>
                 <div style={{ position: "relative", width: 140, height: 140, margin: "0 auto 1rem" }}>
                   <svg width="140" height="140" viewBox="0 0 140 140" style={{ transform: "rotate(-90deg)" }}>
@@ -958,7 +897,7 @@ function VastuCheckerSection() {
                   </div>
                 </div>
 
-                <h4 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 22, color: getScoreMeta(result.score).color, fontStyle: "italic", margin: "0 0 6px" }}>
+                <h4 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 22, color: getScoreMeta(result.score).label, fontStyle: "italic", margin: "0 0 6px" }}>
                   {getScoreMeta(result.score).label}
                 </h4>
                 {result.type === "astro" && (
@@ -968,7 +907,6 @@ function VastuCheckerSection() {
                 )}
               </div>
 
-              {/* Astro-Vastu Chart Insights */}
               {result.type === "astro" && (
                 <div style={{ marginBottom: "1.5rem", background: "rgba(196,132,90,0.06)", padding: "1rem", borderRadius: 4 }}>
                   <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#C4845A", letterSpacing: 2, textTransform: "uppercase", marginBottom: 6 }}>Lagna & Dasha Insights</div>
@@ -981,9 +919,8 @@ function VastuCheckerSection() {
                 </div>
               )}
 
-              {/* Positive Alignments */}
               {((result.supports && result.supports.length > 0) || result.positives.length > 0) && (
-                <div style={{ marginBottom: "1.2rem" }}>
+                <div style={{ marginBottom: "1.25rem" }}>
                   <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 14, fontWeight: 600, color: "#2ecc71", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 6 }}>
                     ✓ Favorable Alignments
                   </div>
@@ -995,7 +932,6 @@ function VastuCheckerSection() {
                 </div>
               )}
 
-              {/* Problem Zones & Remedies */}
               {((result.conflicts && result.conflicts.length > 0) || result.problems.length > 0) && (
                 <div style={{ marginBottom: "1.5rem" }}>
                   <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 14, fontWeight: 600, color: "#ff6b6b", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 6 }}>
@@ -1009,9 +945,8 @@ function VastuCheckerSection() {
                 </div>
               )}
 
-              {/* WhatsApp Consultation Link */}
               <a
-                href={`https://wa.me/91918499881447?text=${encodeURIComponent(
+                href={`https://wa.me/919849027364?text=${encodeURIComponent(
                   `Namaste, I checked my ${result.type === "astro" ? "Astro-Vastu" : "Vastu"} score on your site (${result.score}/100) and would like to book a personalized Vedic correction consultation.`
                 )}`}
                 target="_blank"
@@ -1026,9 +961,7 @@ function VastuCheckerSection() {
               </a>
             </div>
           )}
-
         </div>
-
       </div>
     </section>
   );
@@ -1094,8 +1027,6 @@ function KundaliMatchingCTA() {
   return (
     <section style={{ background: "#FDF6EC", padding: "6rem 1.5rem" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        
-        {/* === STATE 1: THE INPUT FORM === */}
         {!result && (
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? "3rem" : "5rem", alignItems: "center" }}>
             <div style={{ textAlign: isMobile ? "center" : "left" }}>
@@ -1163,7 +1094,6 @@ function KundaliMatchingCTA() {
           </div>
         )}
 
-        {/* === STATE 2: THE RESULT DASHBOARD === */}
         {result && (
           <div style={{ 
             animation: "fadeIn 0.6s ease", background: "#FDF6EC", border: "1px solid rgba(196,132,90,0.3)", 
@@ -1327,7 +1257,6 @@ function PanchangSection() {
             The five limbs of Vedic time-keeping. Plan auspicious activities, avoid challenging hours, and align with the cosmic rhythm.
           </p>
           
-          {/* === DATE NAVIGATION CONTROLS === */}
           <div style={{ 
             display: "flex", 
             justifyContent: "center", 
@@ -1335,7 +1264,6 @@ function PanchangSection() {
             gap: isMobile ? "0.5rem" : "1rem", 
             marginBottom: "1.5rem" 
           }}>
-            
             <button 
               onClick={() => changeDate(-1)}
               style={{
@@ -1386,7 +1314,6 @@ function PanchangSection() {
           </Link>
         </div>
 
-        {/* Bento Grid */}
         <div style={{ 
           display: "grid", 
           gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", 
@@ -1418,7 +1345,6 @@ function PanchangSection() {
           ))}
         </div>
 
-        {/* Expanding Monthly Calendar */}
         <div style={{ 
           maxHeight: showCalendar ? "2000px" : "0", 
           overflow: "hidden", 
@@ -1429,13 +1355,10 @@ function PanchangSection() {
              <HinduCalendar />
           </div>
         </div>
-
       </div>
     </section>
   );
 }
-
-// --- MAIN APPLICATION SHELL ---
 
 export default function App() {
   return (
@@ -1446,7 +1369,16 @@ export default function App() {
       <VastuCheckerSection />
       <PanchangSection />
       <KundaliMatchingCTA />
-      <Footer />
+      <footer style={{ background: "#1E0C02", padding: "3rem", textAlign: "center" }}>
+        <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 20, color: "#EDD9B8", marginBottom: 8, fontStyle: "italic" }}>Sri Astro Jyotish</div>
+        <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#8B6240", letterSpacing: 2, marginBottom: 20 }}>Ancient Wisdom · Modern Guidance</div>
+        <div style={{ display: "flex", gap: "2rem", justifyContent: "center", marginBottom: 20 }}>
+          {["Privacy Policy", "Terms of Service", "Contact Us", "About"].map(l => (
+            <a key={l} href="#" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#8B6240", textDecoration: "none", letterSpacing: 0.5 }}>{l}</a>
+          ))}
+        </div>
+        <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 12, color: "#5C3A1E" }}>© 2026 Sri Astro Jyotish · All Rights Reserved</div>
+      </footer>
     </div>
   );
 }
