@@ -1,3 +1,4 @@
+// src/components/Navbar.js
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -5,7 +6,6 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { NAV_LINKS } from "../data/constants";
 
-// Shared route map so desktop nav and the mobile drawer never fall out of sync.
 const ROUTES = {
   Services: "/services",
   Calendar: "/calendar",
@@ -15,16 +15,12 @@ const ROUTES = {
 
 function getHref(link, isHome) {
   if (ROUTES[link]) return ROUTES[link];
-  // Fallback for anything without a dedicated page — anchor-link on home,
-  // or jump back to home and then to the anchor.
   const targetId = link.toLowerCase().replace(/\s+/g, "-");
   return isHome ? `#${targetId}` : `/#${targetId}`;
 }
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  // Read the viewport synchronously on first client render so there's no
-  // "desktop nav flashes before switching to hamburger" flicker on mobile.
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < 900 : false
   );
@@ -48,7 +44,6 @@ export default function Navbar() {
     };
   }, []);
 
-  // Close the mobile drawer automatically if the viewport grows back to desktop.
   useEffect(() => {
     if (!isMobile) setIsMenuOpen(false);
   }, [isMobile]);
@@ -66,7 +61,6 @@ export default function Navbar() {
 
   return (
     <>
-      {/* CSS handles :hover and the active-tab underline — inline styles can't do pseudo-classes. */}
       <style>{`
         .nav-link {
           position: relative;
@@ -123,6 +117,8 @@ export default function Navbar() {
 
         .cta-btn {
           transition: background 0.25s ease, transform 0.15s ease;
+          display: inline-block;
+          text-decoration: none;
         }
         .cta-btn:hover {
           background: #a36e4b !important;
@@ -233,9 +229,11 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Right Side: CTA & Hamburger */}
+          {/* Right Side: CTA Button & Hamburger */}
           <div style={{ display: "flex", alignItems: "center", gap: isMobile ? "0.25rem" : "1rem" }}>
-            <button
+            <Link
+              href="/contact#contact-form"
+              onClick={() => setIsMenuOpen(false)}
               className="cta-btn"
               style={{
                 fontFamily: "'Cormorant Garamond', Georgia, serif",
@@ -243,16 +241,15 @@ export default function Navbar() {
                 fontWeight: 600,
                 background: "#C4845A",
                 color: "#FDF6EC",
-                border: "none",
-                padding: isMobile ? "6px 8px" : "10px 20px",
+                padding: isMobile ? "6px 10px" : "10px 20px",
                 borderRadius: 2,
-                cursor: "pointer",
                 letterSpacing: isMobile ? 0.5 : 1,
                 whiteSpace: "nowrap",
+                textAlign: "center",
               }}
             >
               Get Consultation
-            </button>
+            </Link>
 
             {/* Mobile Hamburger Icon */}
             {isMobile && (
@@ -334,7 +331,7 @@ export default function Navbar() {
               </button>
             </div>
 
-            {/* Links — same route map as desktop, plus active-state highlighting */}
+            {/* Mobile Nav Links */}
             <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
               {NAV_LINKS.map((link) => {
                 const href = getHref(link, isHome);
