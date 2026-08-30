@@ -352,7 +352,10 @@ export default function ServicesPage() {
             <button style={{
               fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 17, fontWeight: 600,
               background: "#C4845A", color: "#FDF6EC", border: "none", padding: "14px 32px", borderRadius: 2, cursor: "pointer", letterSpacing: 1,
-            }}>Book Intro Call</button>
+            }}><a 
+              href="/contact"
+              target="_blank"
+              rel="noopener noreferrer">Book Intro Call</a></button>
             <a 
               href="https://wa.me/918499881447?text=Hello%2C%20I%20am%20not%20sure%20which%20service%20I%20need.%20Can%20we%20have%20an%20introductory%20chat%3F"
               target="_blank"
