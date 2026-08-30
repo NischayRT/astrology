@@ -158,7 +158,7 @@ function CelestialBackground() {
     <svg
       viewBox="0 0 800 500"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.25 }}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.45 }}
       preserveAspectRatio="xMidYMid slice"
     >
       <style>{`
@@ -293,7 +293,7 @@ function HeroSection() {
             left: -20%;
             top: 12%;
             width: 170px;
-            opacity: 0.25;
+            opacity: 0.45;
           }
           .hero-sun-wrap {
             right: -20%;
