@@ -76,7 +76,7 @@ export default function ContactPage() {
       {/* Content Section — same bordered/alternating rhythm as the Services & About pages */}
       <section style={{ background: COLORS.bg, borderTop: "1px solid rgba(196,132,90,0.15)", padding: "5rem 1.5rem" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "3rem", alignItems: "start" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "3rem", alignItems: "start" }}>
             {/* Info Card + Map */}
             <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
               <div style={{ ...cardStyleAlt, padding: "2.5rem" }}>

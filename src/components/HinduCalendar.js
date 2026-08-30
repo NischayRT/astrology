@@ -74,6 +74,14 @@ export default function HinduCalendar() {
   const [selectedDay, setSelectedDay] = useState(31);
   const [location, setLocation] = useState(PRESET_CITIES[0]);
   const [activeTab, setActiveTab] = useState("windows");
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Geolocation & Autocomplete Search States
   const [searchQuery, setSearchQuery] = useState("");
@@ -227,7 +235,7 @@ export default function HinduCalendar() {
           background: "#FAF2E6",
           border: "1px solid rgba(196,132,90,0.3)",
           borderRadius: 6,
-          padding: "1rem 1.5rem",
+          padding: isMobile ? "1rem" : "1rem 1.5rem",
           display: "flex",
           flexWrap: "wrap",
           alignItems: "center",
@@ -238,19 +246,19 @@ export default function HinduCalendar() {
         }}
       >
         {/* Active City Label */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
           <IconPin size={18} />
-          <div>
+          <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 12, letterSpacing: 1.5, color: "#8B6240", textTransform: "uppercase" }}>Current Almanac Coordinates</div>
-            <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 19, fontWeight: 600, color: "#2C1205" }}>
+            <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 19, fontWeight: 600, color: "#2C1205", overflowWrap: "break-word" }}>
               {location.name}
             </div>
           </div>
         </div>
 
         {/* Search Input + GPS Autocomplete Container */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flex: "1 1 320px", maxWidth: 440, position: "relative" }} ref={searchRef}>
-          <div style={{ position: "relative", width: "100%" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 10, flex: "1 1 280px", maxWidth: isMobile ? "100%" : 440, position: "relative" }} ref={searchRef}>
+          <div style={{ position: "relative", width: "100%", flex: "1 1 180px", minWidth: 0 }}>
             <input
               type="text"
               placeholder="Search any town/city worldwide..."
@@ -380,135 +388,291 @@ export default function HinduCalendar() {
       </div>
 
       {/* Month Navigation Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-        <button
-          onClick={handlePrevMonth}
-          aria-label="Previous month"
-          style={{
-            background: "#FDF6EC",
-            border: "1px solid rgba(196,132,90,0.4)",
-            borderRadius: 4,
-            padding: "6px 16px",
-            fontFamily: "'Cormorant Garamond', Georgia, serif",
-            fontSize: 16,
-            fontWeight: 600,
-            cursor: "pointer",
-            color: "#6B4423",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            transition: "background 0.2s ease, border-color 0.2s ease",
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = "#F5E0C8"; e.currentTarget.style.borderColor = "#C4845A"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = "#FDF6EC"; e.currentTarget.style.borderColor = "rgba(196,132,90,0.4)"; }}
-        >
-          <IconChevronLeft size={15} />
-          Prev
-        </button>
+      <div style={{
+        display: "flex",
+        flexDirection: isMobile ? "column" : "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: isMobile ? "0.85rem" : 0,
+        marginBottom: "1.5rem",
+      }}>
+        {isMobile && (
+          <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "1.7rem", fontWeight: 500, margin: 0, textAlign: "center" }}>
+            {monthName} {year}
+          </h2>
+        )}
 
-        <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "2.2rem", fontWeight: 500, margin: 0, textAlign: "center" }}>
-          {monthName} {year}
-        </h2>
+        <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center", width: "100%", gap: isMobile ? "0.75rem" : 0 }}>
+          <button
+            onClick={handlePrevMonth}
+            aria-label="Previous month"
+            style={{
+              background: "#FDF6EC",
+              border: "1px solid rgba(196,132,90,0.4)",
+              borderRadius: 4,
+              padding: isMobile ? "8px 14px" : "6px 16px",
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontSize: 16,
+              fontWeight: 600,
+              cursor: "pointer",
+              color: "#6B4423",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 6,
+              flex: isMobile ? 1 : "none",
+              transition: "background 0.2s ease, border-color 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#F5E0C8"; e.currentTarget.style.borderColor = "#C4845A"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#FDF6EC"; e.currentTarget.style.borderColor = "rgba(196,132,90,0.4)"; }}
+          >
+            <IconChevronLeft size={15} />
+            Prev
+          </button>
 
-        <button
-          onClick={handleNextMonth}
-          aria-label="Next month"
-          style={{
-            background: "#FDF6EC",
-            border: "1px solid rgba(196,132,90,0.4)",
-            borderRadius: 4,
-            padding: "6px 16px",
-            fontFamily: "'Cormorant Garamond', Georgia, serif",
-            fontSize: 16,
-            fontWeight: 600,
-            cursor: "pointer",
-            color: "#6B4423",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            transition: "background 0.2s ease, border-color 0.2s ease",
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = "#F5E0C8"; e.currentTarget.style.borderColor = "#C4845A"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = "#FDF6EC"; e.currentTarget.style.borderColor = "rgba(196,132,90,0.4)"; }}
-        >
-          Next
-          <IconChevronRight size={15} />
-        </button>
+          {!isMobile && (
+            <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "2.2rem", fontWeight: 500, margin: 0, textAlign: "center" }}>
+              {monthName} {year}
+            </h2>
+          )}
+
+          <button
+            onClick={handleNextMonth}
+            aria-label="Next month"
+            style={{
+              background: "#FDF6EC",
+              border: "1px solid rgba(196,132,90,0.4)",
+              borderRadius: 4,
+              padding: isMobile ? "8px 14px" : "6px 16px",
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontSize: 16,
+              fontWeight: 600,
+              cursor: "pointer",
+              color: "#6B4423",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 6,
+              flex: isMobile ? 1 : "none",
+              transition: "background 0.2s ease, border-color 0.2s ease",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#F5E0C8"; e.currentTarget.style.borderColor = "#C4845A"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#FDF6EC"; e.currentTarget.style.borderColor = "rgba(196,132,90,0.4)"; }}
+          >
+            Next
+            <IconChevronRight size={15} />
+          </button>
+        </div>
       </div>
 
       {/* Weekday Strip */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", textAlign: "center", marginBottom: 12 }}>
         {DAYS_OF_WEEK.map((d) => (
           <div key={d.eng}>
-            <div style={{ fontWeight: 700, fontSize: 15, letterSpacing: 1 }}>{d.eng}</div>
-            <div style={{ fontSize: 14, color: "#8B6240" }}>{d.san}</div>
+            <div style={{ fontWeight: 700, fontSize: isMobile ? 12 : 15, letterSpacing: isMobile ? 0.5 : 1 }}>{d.eng}</div>
+            <div style={{ fontSize: isMobile ? 11 : 14, color: "#8B6240" }}>{d.san}</div>
           </div>
         ))}
       </div>
 
       {/* Calendar Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 8, marginBottom: "2.5rem" }}>
-        {calendarCells.map((cell, index) => {
-          if (cell.empty) {
-            return <div key={`empty-${index}`} style={{ minHeight: 90 }} />;
-          }
-          const isSelected = selectedDay === cell.day;
-          const isToday = isCurrentMonth && today.getDate() === cell.day;
-          return (
+      {/* Month Header & Controls */}
+<div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: isMobile ? "1rem" : "1.5rem" }}>
+  <button
+    onClick={handlePrevMonth}
+    style={{
+      background: "#FDF6EC",
+      border: "1px solid rgba(196,132,90,0.4)",
+      borderRadius: 4,
+      padding: isMobile ? "5px 12px" : "6px 16px",
+      fontFamily: "'Cormorant Garamond', Georgia, serif",
+      fontSize: isMobile ? 13 : 15,
+      cursor: "pointer",
+      color: "#6B4423"
+    }}
+  >
+    ← Prev
+  </button>
+
+  <div style={{ textAlign: "center" }}>
+    <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: isMobile ? "1.5rem" : "2.2rem", fontWeight: 600, margin: 0 }}>
+      {monthName} {year}
+    </h2>
+  </div>
+
+  <button
+    onClick={handleNextMonth}
+    style={{
+      background: "#FDF6EC",
+      border: "1px solid rgba(196,132,90,0.4)",
+      borderRadius: 4,
+      padding: isMobile ? "5px 12px" : "6px 16px",
+      fontFamily: "'Cormorant Garamond', Georgia, serif",
+      fontSize: isMobile ? 13 : 15,
+      cursor: "pointer",
+      color: "#6B4423"
+    }}
+  >
+    Next →
+  </button>
+</div>
+
+{/* Weekday Names Header */}
+<div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", textAlign: "center", marginBottom: isMobile ? 6 : 12 }}>
+  {DAYS_OF_WEEK.map((d) => (
+    <div key={d.eng} style={{ padding: isMobile ? "2px 0" : "4px 0" }}>
+      <div style={{ fontWeight: 700, fontSize: isMobile ? 11 : 14, letterSpacing: 0.5, color: "#2C1205" }}>
+        {isMobile ? d.eng.charAt(0) : d.eng}
+      </div>
+      {!isMobile && <div style={{ fontSize: 13, color: "#8B6240" }}>{d.san}</div>}
+    </div>
+  ))}
+</div>
+
+{/* Calendar Cells Grid */}
+<div
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
+    gap: isMobile ? "3px" : "8px",
+    marginBottom: "2rem",
+    width: "100%",
+  }}
+>
+  {calendarCells.map((cell, index) => {
+    if (cell.empty) {
+      return (
+        <div
+          key={`empty-${index}`}
+          style={{
+            minHeight: isMobile ? 48 : 88,
+            aspectRatio: isMobile ? "1 / 1" : "auto",
+          }}
+        />
+      );
+    }
+    const isSelected = selectedDay === cell.day;
+    const isToday = isCurrentMonth && today.getDate() === cell.day;
+
+    // Mobile-friendly condensed tithi labels
+    const formatMobileTithi = (t) => {
+      if (!t) return "";
+      const map = {
+        "Pratipada": "Pratipada",
+        "Chaturdashi": "Chatur.",
+        "Trayodashi": "Trayo.",
+        "Dwadashi": "Dwadashi",
+        "Ekadashi": "Ekadashi",
+        "Amavasya": "Amavasya",
+        "Purnima": "Purnima",
+        "Saptami": "Saptami",
+        "Ashtami": "Ashtami",
+        "Shashthi": "Shashthi",
+        "Chaturthi": "Chaturthi",
+        "Panchami": "Panchami",
+        "Tritiya": "Tritiya",
+        "Dwitiya": "Dwitiya",
+        "Navami": "Navami",
+        "Dashami": "Dashami"
+      };
+      return map[t] || t.slice(0, 7);
+    };
+
+    return (
+      <div
+        key={`day-${cell.day}`}
+        onClick={() => {
+          setSelectedDay(cell.day);
+          setTimeout(() => {
+            detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }, 100);
+        }}
+        style={{
+          position: "relative",
+          minHeight: isMobile ? 46 : 88,
+          aspectRatio: isMobile ? "1 / 1" : "auto",
+          background: isSelected ? "#F5E0C8" : "#FAF2E6",
+          border: isSelected
+            ? "1.5px solid #C4845A"
+            : isToday
+            ? "1.5px solid rgba(196,132,90,0.75)"
+            : "1px solid rgba(196,132,90,0.22)",
+          borderRadius: 4,
+          padding: isMobile ? "4px 2px" : "8px",
+          cursor: "pointer",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          alignItems: isMobile ? "center" : "stretch",
+          textAlign: isMobile ? "center" : "left",
+          boxSizing: "border-box",
+          overflow: "hidden",
+          transition: "all 0.2s ease",
+        }}
+      >
+        {isToday && !isSelected && (
+          <span
+            style={{
+              position: "absolute",
+              top: isMobile ? 3 : 5,
+              right: isMobile ? 3 : 5,
+              width: 5,
+              height: 5,
+              borderRadius: "50%",
+              background: "#C4845A",
+            }}
+            title="Today"
+          />
+        )}
+
+        {/* Date Number */}
+        <div
+          style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: isMobile ? 13 : 18,
+            fontWeight: 700,
+            lineHeight: 1,
+            color: "#2C1205",
+          }}
+        >
+          {cell.day}
+        </div>
+
+        {/* Tithi Text */}
+        <div style={{ width: "100%", overflow: "hidden" }}>
+          <div
+            style={{
+              fontSize: isMobile ? 8.5 : 12,
+              letterSpacing: isMobile ? -0.2 : 0,
+              color: "#2C1205",
+              fontWeight: 600,
+              lineHeight: 1.1,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {isMobile ? formatMobileTithi(cell.tithi) : cell.tithi}
+          </div>
+          {!isMobile && (
             <div
-              key={`day-${cell.day}`}
-              onClick={() => {
-                setSelectedDay(cell.day);
-                setTimeout(() => {
-                  detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-                }, 100);
-              }}
-              onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.boxShadow = "0 4px 14px rgba(196,132,90,0.18)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; }}
               style={{
-                position: "relative",
-                minHeight: 90,
-                background: isSelected ? "#F5E0C8" : "#FAF2E6",
-                border: isSelected ? "1.5px solid #C4845A" : isToday ? "1.5px solid rgba(196,132,90,0.6)" : "1px solid rgba(196,132,90,0.25)",
-                borderRadius: 4,
-                padding: "8px",
-                cursor: "pointer",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                transition: "box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease",
+                fontSize: 10.5,
+                color: "#8B6240",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                marginTop: 2,
               }}
             >
-              {isToday && !isSelected && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: 6,
-                    right: 6,
-                    width: 6,
-                    height: 6,
-                    borderRadius: "50%",
-                    background: "#C4845A",
-                  }}
-                  title="Today"
-                />
-              )}
-              <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 19, fontWeight: 700 }}>
-                {cell.day}
-              </div>
-              <div>
-                <div style={{ fontSize: 13, color: "#2C1205", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {cell.tithi}
-                </div>
-                <div style={{ fontSize: 11, color: "#8B6240", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {cell.nakshatra}
-                </div>
-              </div>
+              {cell.nakshatra}
             </div>
-          );
-        })}
+          )}
+        </div>
       </div>
-
+    );
+  })}
+</div>
       {/* Comprehensive Details Section */}
       {dayDetails && (
         <div
@@ -517,14 +681,14 @@ export default function HinduCalendar() {
             background: "#FAF2E6",
             border: "1px solid rgba(196,132,90,0.3)",
             borderRadius: 6,
-            padding: "2rem",
+            padding: isMobile ? "1.25rem" : "2rem",
             boxShadow: "0 10px 30px rgba(196,132,90,0.06)",
           }}
         >
-          <div style={{ fontSize: 12, letterSpacing: 2, color: "#C4845A", textTransform: "uppercase", marginBottom: 6 }}>
+          <div style={{ fontSize: 12, letterSpacing: isMobile ? 1 : 2, color: "#C4845A", textTransform: "uppercase", marginBottom: 6, overflowWrap: "break-word" }}>
             DETAILED TIMING & MUHURTHA · {location.name.toUpperCase()}
           </div>
-          <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "1.8rem", margin: "0 0 1.5rem", fontWeight: 500 }}>
+          <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: isMobile ? "1.4rem" : "1.8rem", margin: "0 0 1.5rem", fontWeight: 500 }}>
             {selectedDateFormatted}
           </h3>
 
@@ -536,9 +700,9 @@ export default function HinduCalendar() {
                 background: activeTab === "windows" ? "#C4845A" : "transparent",
                 color: activeTab === "windows" ? "#FDF6EC" : "#8B6240",
                 fontFamily: "'Cormorant Garamond', Georgia, serif",
-                fontSize: 16,
+                fontSize: isMobile ? 14 : 16,
                 fontWeight: 600,
-                padding: "6px 16px",
+                padding: isMobile ? "6px 12px" : "6px 16px",
                 border: "1px solid rgba(196,132,90,0.4)",
                 borderRadius: 4,
                 cursor: "pointer",
@@ -547,7 +711,7 @@ export default function HinduCalendar() {
               onMouseEnter={(e) => { if (activeTab !== "windows") e.currentTarget.style.background = "rgba(196,132,90,0.12)"; }}
               onMouseLeave={(e) => { if (activeTab !== "windows") e.currentTarget.style.background = "transparent"; }}
             >
-              Essential Panchang & Muhurtas
+              {isMobile ? "Panchang & Muhurtas" : "Essential Panchang & Muhurtas"}
             </button>
             <button
               onClick={() => setActiveTab("choghadiya")}
@@ -555,9 +719,9 @@ export default function HinduCalendar() {
                 background: activeTab === "choghadiya" ? "#C4845A" : "transparent",
                 color: activeTab === "choghadiya" ? "#FDF6EC" : "#8B6240",
                 fontFamily: "'Cormorant Garamond', Georgia, serif",
-                fontSize: 16,
+                fontSize: isMobile ? 14 : 16,
                 fontWeight: 600,
-                padding: "6px 16px",
+                padding: isMobile ? "6px 12px" : "6px 16px",
                 border: "1px solid rgba(196,132,90,0.4)",
                 borderRadius: 4,
                 cursor: "pointer",
@@ -566,12 +730,12 @@ export default function HinduCalendar() {
               onMouseEnter={(e) => { if (activeTab !== "choghadiya") e.currentTarget.style.background = "rgba(196,132,90,0.12)"; }}
               onMouseLeave={(e) => { if (activeTab !== "choghadiya") e.currentTarget.style.background = "transparent"; }}
             >
-              Day & Night Choghadiya
+              {isMobile ? "Choghadiya" : "Day & Night Choghadiya"}
             </button>
           </div>
 
           {activeTab === "windows" ? (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? 140 : 200}px, 1fr))`, gap: "1rem" }}>
               <div style={{ background: "#FDF6EC", border: "1px solid rgba(196,132,90,0.2)", padding: "12px 16px", borderRadius: 4 }}>
                 <div style={{ fontSize: 12, letterSpacing: 1.5, color: "#8B6240", textTransform: "uppercase" }}>TITHI</div>
                 <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 18, fontWeight: 600, marginTop: 4 }}>
