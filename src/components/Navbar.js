@@ -228,7 +228,7 @@ export default function Navbar() {
             <div className="nav-logo-box" style={scrolled ? { width: 30, height: 30 } : undefined}>
               <Image
                 src="/logo.webp"
-                alt="Sri Astro Jyotish"
+                alt="KSR Astro Jyotish"
                 fill
                 sizes="44px"
                 style={{
@@ -241,7 +241,7 @@ export default function Navbar() {
 
             <div style={{ textAlign: scrolled ? "left" : "center", lineHeight: 1, transition: "all 0.35s ease" }}>
               <div className="nav-brand-name" style={scrolled ? { letterSpacing: 1.2 } : undefined}>
-                Sri Astro Jyotish
+                KSR Astro Jyotish
               </div>
               {!scrolled && <div className="nav-brand-tagline">Vedic Wisdom</div>}
             </div>
@@ -312,7 +312,7 @@ export default function Navbar() {
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", borderBottom: "1px solid rgba(196,132,90,0.2)", paddingBottom: "1rem" }}>
             <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 16, fontWeight: 700, color: "#2C1205" }}>
-              SRI ASTRO JYOTISH
+              KSR Astro JYOTISH
             </div>
             <button
               onClick={() => setIsMenuOpen(false)}

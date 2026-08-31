@@ -2,7 +2,7 @@
 import WhatsAppButton from "../components/WhatsAppButton"; // ADD THIS IMPORT
 
 export const metadata = {
-  title: "Sri Astro Jyotish",
+  title: "KSR Astro Jyotish",
   description: "Ancient Wisdom · Modern Guidance",
 };
 

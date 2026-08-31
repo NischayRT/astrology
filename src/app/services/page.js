@@ -287,7 +287,7 @@ export default function ServicesPage() {
                     {/* CTA Button */}
                     <div style={{ textAlign: "center" }}>
                       <a 
-                        href={`https://wa.me/918499881447?text=${encodeURIComponent(`Hello, I would like to enquire about the ${service.category} service.`)}`}
+                        href={`https://wa.me/919959 629 678?text=${encodeURIComponent(`Hello, I would like to enquire about the ${service.category} service.`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
@@ -357,7 +357,7 @@ export default function ServicesPage() {
               target="_blank"
               rel="noopener noreferrer">Book Intro Call</a></button>
             <a 
-              href="https://wa.me/918499881447?text=Hello%2C%20I%20am%20not%20sure%20which%20service%20I%20need.%20Can%20we%20have%20an%20introductory%20chat%3F"
+              href="https://wa.me/919959 629 678?text=Hello%2C%20I%20am%20not%20sure%20which%20service%20I%20need.%20Can%20we%20have%20an%20introductory%20chat%3F"
               target="_blank"
               rel="noopener noreferrer"
               style={{

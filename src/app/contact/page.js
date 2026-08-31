@@ -81,7 +81,7 @@ export default function ContactPage() {
             <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
               <div style={{ ...cardStyleAlt, padding: "2.5rem" }}>
                 <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 24, color: COLORS.ink, margin: "0 0 1.5rem", fontStyle: "italic" }}>
-                  Sri Astro Clinic
+                  KSR Astro 
                 </h3>
 
                 <div style={{ marginBottom: "1.5rem" }}>

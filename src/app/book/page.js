@@ -6,7 +6,7 @@ function Footer() {
   return (
     <footer style={{ background: "#1E0C02", padding: "3rem", textAlign: "center", marginTop: "4rem" }}>
       <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 20, color: "#EDD9B8", marginBottom: 8, fontStyle: "italic" }}>
-        Sri Astro Jyotish
+        KSR Astro Jyotish
       </div>
       <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, color: "#8B6240", letterSpacing: 2, marginBottom: 20 }}>
         Ancient Wisdom · Modern Guidance
@@ -19,7 +19,7 @@ function Footer() {
         ))}
       </div>
       <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 12, color: "#5C3A1E" }}>
-        © 2026 Sri Astro Jyotish · All Rights Reserved
+        © 2026 KSR Astro Jyotish · All Rights Reserved
       </div>
     </footer>
   );

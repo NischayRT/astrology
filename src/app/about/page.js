@@ -83,7 +83,7 @@ export default function AboutPage() {
                 Astrology as a Compass, Not Fatalism
               </h2>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 18, color: COLORS.ink, lineHeight: 1.8, marginBottom: "1.25rem" }}>
-                At Sri Astro Clinic, Vedic Jyotish is not practiced to induce anxiety or fatalistic predictions. Your birth chart is a sacred cosmic blueprint that illuminates your latent karmic predispositions, natural strengths, and pivotal planetary cycles (dashas).
+                At KSR Astro , Vedic Jyotish is not practiced to induce anxiety or fatalistic predictions. Your birth chart is a sacred cosmic blueprint that illuminates your latent karmic predispositions, natural strengths, and pivotal planetary cycles (dashas).
               </p>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 18, color: COLORS.inkSoft, lineHeight: 1.8 }}>
                 Under Sharma garu&rsquo;s guidance, our focus remains on practical remedies—shastric homas, yantra placement, mantra sadhana, and non-invasive architectural alignments—that empower you to overcome obstacles and make confident life decisions.
@@ -121,7 +121,7 @@ export default function AboutPage() {
           <div style={{ textAlign: "center", marginBottom: "2rem" }}>
             <div style={sectionEyebrow}>Find Us</div>
             <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: "clamp(1.8rem, 3vw, 2.2rem)", color: COLORS.ink, fontWeight: 400, margin: 0, fontStyle: "italic" }}>
-              Sri Astro Clinic, Hyderabad
+              KSR Astro , Hyderabad
             </h2>
           </div>
           <LocationMap />
